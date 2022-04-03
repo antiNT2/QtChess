@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="QtEchec">
+    <file>selectedCase.png</file>
+    <file>redCase.png</file>
+    <file>yellowCase.png</file>
+  </qresource>
+</RCC>
