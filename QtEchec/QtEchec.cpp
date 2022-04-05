@@ -25,7 +25,6 @@ QtEchec::QtEchec(QWidget* parent)
 			countX++;
 	}
 
+	displayManager.togglePlacementIndication(true, 2, 0);
 
-
-	//ui.debugInfoDisplay->insertPlainText(QString("chess case 1: x= %1 y= %2").arg(displayManager.));
 }
