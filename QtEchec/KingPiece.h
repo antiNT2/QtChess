@@ -1,12 +1,15 @@
 #pragma once
 #include "AbsChessPiece.h"
 
-class KingPiece :
-	public AbsChessPiece
+namespace ChessPiecesData
 {
-public:
-	KingPiece(PiecePosition initialPos, bool _isPlayer1);
-	virtual std::vector<Trajectory> getPossibleDestinations() override;
-	virtual const std::string getPieceName() override;
-};
+	class KingPiece :
+		public AbsChessPiece
+	{
+	public:
+		KingPiece(PiecePosition initialPos, bool _isPlayer1);
+		virtual std::vector<PiecePosition> getPossibleDestinations(ChessPiecesHolder currentPieces) override;
+		virtual const std::string getPieceName() override;
+	};
+}
 

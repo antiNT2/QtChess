@@ -1,11 +1,11 @@
 #pragma once
+
 #include <vector>
 #include <string>
-#include<math.h>  
+#include <memory>
 
-class AbsChessPiece
+namespace ChessPiecesData
 {
-public:
 	struct PiecePosition
 	{
 		PiecePosition(int _gridX = 0, int _gridY = 0)
@@ -19,71 +19,56 @@ public:
 			return PiecePosition(gridX + dx, gridY + dy);
 		}
 
-		bool operator==(const PiecePosition& rhs)
+		bool operator==(const PiecePosition& other)
 		{
-			return gridX == rhs.gridX && gridY == rhs.gridY;
+			return gridX == other.gridX && gridY == other.gridY;
+		}
+
+		bool operator!=(const PiecePosition& other)
+		{
+			return !(*this == other);
+		}
+
+		PiecePosition operator+(const PiecePosition& other)
+		{
+			return PiecePosition(gridX + other.gridX, gridY + other.gridY);
+		}
+
+		std::string print()
+		{
+			return ("x: " + std::to_string(gridX) + " y :" + std::to_string(gridY));
 		}
 
 		int gridX;
 		int gridY;
 	};
-	class Trajectory
+
+	class ChessPiecesHolder;
+
+	class AbsChessPiece
 	{
 	public:
-		Trajectory(PiecePosition _start, PiecePosition _finish)
-		{
-			start = _start;
-			finish = _finish;
+		AbsChessPiece(PiecePosition initialPos, bool isPlayer1);
+		PiecePosition getPiecePosition();
+		void setPiecePosition(PiecePosition pos);
+		const bool isPlayer1Piece();
 
-			directionX = finish.gridX - start.gridX;
-			directionX = (directionX > 0) - (directionX < 0); //cpp magic to get the sign of the number
-
-			directionY = finish.gridY - start.gridY;
-			directionY = (directionY > 0) - (directionY < 0); //cpp magic to get the sign of the number
-		}
-		Trajectory(PiecePosition _start, int translationFromStartX, int translationFromStartY)
-		{
-			*this = Trajectory(_start, _start.translated(translationFromStartX, translationFromStartY));
-		}
-
-		const PiecePosition getStart()
-		{
-			return start;
-		}
-
-		const PiecePosition getFinish()
-		{
-			return finish;
-		}
-
-		const int getDirectionX()
-		{
-			return directionX;
-		}
-
-		const int getDirectionY()
-		{
-			return directionX;
-		}
+		virtual const std::string getPieceName() = 0;
+		//virtual std::vector<Trajectory> getPossibleDestinations() = 0;
+		virtual std::vector<PiecePosition> getPossibleDestinations(ChessPiecesHolder currentPieces) = 0;
 
 	private:
-		PiecePosition start;
-		PiecePosition finish;
-		int directionX = 0;
-		int directionY = 0;
+		PiecePosition position;
+		bool isPlayer1;
 	};
-	AbsChessPiece(PiecePosition initialPos, bool isPlayer1);
-	PiecePosition getPiecePosition();
-	void setPiecePosition(PiecePosition pos);
-	const bool isPlayer1Piece();
 
-	virtual const std::string getPieceName() = 0;
-	virtual std::vector<Trajectory> getPossibleDestinations() = 0;
-
-private:
-	PiecePosition position;
-	bool isPlayer1;
-};
+	class ChessPiecesHolder
+	{
+	public:
+		const std::shared_ptr<AbsChessPiece> getPieceAtPosition(PiecePosition pos);
+		std::vector<std::shared_ptr<AbsChessPiece>> allChessPieces;
+	};
+}
 
 
 

@@ -2,7 +2,7 @@
 #include <QPropertyAnimation>
 #include <QLabel>
 #include <QScrollbar>
-#include "KingPiece.h"
+#include <stdexcept>
 using namespace std;
 
 #pragma region QStyle Definition
@@ -62,6 +62,17 @@ void DisplayManager::movePieceToPosition(QWidget* piece, int gridX, int gridY)
 	animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
+const DisplayManager::SpawnedPiece DisplayManager::getSpawnedPiece(const const std::shared_ptr<AbsChessPiece> piece)
+{
+	for (auto&& sp : spawnedPieces)
+	{
+		if (sp.pieceData == piece)
+			return sp;
+	}
+
+	throw std::logic_error("Piece not found");
+}
+
 void DisplayManager::togglePlacementIndication(bool show, int gridX, int gridY)
 {
 	getButtonAtPosition(gridX, gridY)->setStyleSheet(getButtonStyleSheet(((gridX + gridY) % 2 == 0 ? true : false), show));
@@ -94,6 +105,11 @@ void DisplayManager::summonPiece(std::shared_ptr<AbsChessPiece> pieceData)
 	spawnedPieces.push_back(newSpawnedPiece);
 }
 
+void DisplayManager::movePieceToPosition(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY)
+{
+	movePieceToPosition(getSpawnedPiece(piece).spawnedPieceVisual, gridX, gridY);
+}
+
 void DisplayManager::displayMessage(QString messageToShow)
 {
 	ui->debugInfoDisplay->insertPlainText(messageToShow);
@@ -122,11 +138,6 @@ QString DisplayManager::getButtonStyleSheet(bool isRedCase, bool isPlacementIndi
 
 	return output;
 }
-
-//vector<QPushButton*>& DisplayManager::getAllChessButtons()
-//{
-//	return allChessButtons;
-//}
 
 const int DisplayManager::getNumberOfRows()
 {

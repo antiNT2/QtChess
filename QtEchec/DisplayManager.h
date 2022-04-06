@@ -3,10 +3,12 @@
 #include <QPushButton>
 #include <QString>
 #include <QtWidgets/QFrame>
-#include "AbsChessPiece.h"
 #include <ui_QtEchec.h>
+#include "AbsChessPiece.h"
 using std::vector;
 using std::shared_ptr;
+
+using ChessPiecesData::AbsChessPiece;
 
 class DisplayManager
 {
@@ -16,10 +18,11 @@ public:
 	DisplayManager();
 	DisplayManager(QFrame* chessFrameParent, Ui::QtEchecClass* _ui);
 	void setUpChessUi();
-	void movePieceToPosition(QWidget* piece, int gridX, int gridY);
+	
 	void togglePlacementIndication(bool show, int gridX, int gridY);
 	
 	void summonPiece(std::shared_ptr<AbsChessPiece> pieceData);
+	void movePieceToPosition(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY);
 
 	void displayMessage(QString messageToShow);
 
@@ -45,7 +48,9 @@ private:
 	QPushButton* createChessCase(QWidget* parent);
 	QPushButton* createPieceVisual(std::shared_ptr<AbsChessPiece> pieceData);
 	QString getButtonStyleSheet(bool isRedCase, bool isPlacementIndicator);
+	void movePieceToPosition(QWidget* piece, int gridX, int gridY);
 	QFrame* chessFrame;
+	const SpawnedPiece getSpawnedPiece(const const std::shared_ptr<AbsChessPiece> piece);
 
 	vector<QPushButton*> allChessCasesButtons;
 	vector<SpawnedPiece> spawnedPieces;

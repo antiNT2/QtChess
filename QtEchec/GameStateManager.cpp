@@ -11,9 +11,15 @@ GameStateManager::GameStateManager(DisplayManager* _displayManager) : displayMan
 
 void GameStateManager::instantiateInitialPieces()
 {
+	using namespace ChessPiecesData;
 	//Summon kings
-	instantiatePiece<KingPiece>(AbsChessPiece::PiecePosition(4, 7), true);
-	instantiatePiece<KingPiece>(AbsChessPiece::PiecePosition(4, 0), false);
+	instantiatePiece<KingPiece>(PiecePosition(4, 7), true);
+
+
+	//test
+	instantiatePiece<KingPiece>(PiecePosition(4, 6), true);
+
+	instantiatePiece<KingPiece>(PiecePosition(4, 0), false);
 }
 
 void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect)
@@ -24,50 +30,127 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 			return;
 	}
 
+	//we allow selecting a piece as long as it is from the correct team
 	if (pieceToSelect.get()->isPlayer1Piece() == isPlayer1Turn)
 	{
-		//we allow selecting a piece as long as it is from the correct team
-		currentSelectedPiece = pieceToSelect;
-		displayManager->displayMessage(QString("Selected " +
-			QString::fromStdString(pieceToSelect.get()->getPieceName()) + " at (%1, %2) \n").
-			arg(pieceToSelect.get()->getPiecePosition().gridX).arg(pieceToSelect.get()->getPiecePosition().gridY));
+		//if we already selected the piece to select, it's time to unselect it
+		if (currentSelectedPiece != nullptr && currentSelectedPiece == pieceToSelect)
+		{
+			deselectCurrentPiece();
+		}
+		else
+		{
+			currentSelectedPiece = pieceToSelect;
+			displayManager->displayMessage(QString("+Selected " +
+				QString::fromStdString(pieceToSelect.get()->getPieceName()) + " at (%1, %2) \n").
+				arg(pieceToSelect.get()->getPiecePosition().gridX).arg(pieceToSelect.get()->getPiecePosition().gridY));
+
+			setCurrentAllowedDestinations(pieceToSelect.get()->getPossibleDestinations(piecesList));
+		}
+
 	}
 	else
 	{
-		//we already selected our piece, and now we clicked on an enemy one to eat it
-		displayManager->displayMessage(QString("Trying to eat " + QString::fromStdString(pieceToSelect.get()->getPieceName() + "\n")));
-	}
-}
+		//we already selected our piece, and now we clicked on an enemy to eat it
 
-//std::vector<AbsChessPiece::PiecePosition> GameStateManager::computeAllowedDestinations(shared_ptr<AbsChessPiece> piece)
-//{
-//	std::vector<AbsChessPiece::Trajectory> allowedTrajectories = piece.get()->getPossibleDestinations();
-//
-//	for (auto&& trajectory : allowedTrajectories)
-//	{
-//		
-//	}
-//}
-
-const shared_ptr<AbsChessPiece> GameStateManager::getPieceAtPosition(AbsChessPiece::PiecePosition pos)
-{
-	for (auto&& piece : allChessPieces)
-	{
-		if (piece.get()->getPiecePosition() == pos)
+		// Are we allowed to move there to eat the piece ?
+		if (isPositionIncludedInCurrentAllowedPos(pieceToSelect.get()->getPiecePosition()))
 		{
-			return piece;
+			//TODO: Eat the piece
+		}
+		else
+		{
+			deselectCurrentPiece();
 		}
 	}
-
-	return nullptr;
 }
 
+void GameStateManager::deselectCurrentPiece()
+{
+	displayManager->displayMessage(QString("-Unselected " +
+		QString::fromStdString(currentSelectedPiece.get()->getPieceName()) + " at (%1, %2) \n").
+		arg(currentSelectedPiece.get()->getPiecePosition().gridX).arg(currentSelectedPiece.get()->getPiecePosition().gridY));
+
+	currentSelectedPiece = nullptr;
+	setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition>());
+}
+
+void GameStateManager::moveCurrentPiece(ChessPiecesData::PiecePosition destination)
+{
+	if (currentSelectedPiece == nullptr)
+	{
+		displayManager->displayMessage(QString("Select a piece first! \n"));
+		return;
+	}
+	if (isPositionIncludedInCurrentAllowedPos(destination) == false)
+	{
+		displayManager->displayMessage(QString("Illegal move! \n"));
+		deselectCurrentPiece();
+		return;
+	}
+
+	if (movePiece(currentSelectedPiece, destination))
+		deselectCurrentPiece();
+}
+
+void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition> allowedDestinations)
+{
+	//First we hide the current placement indicators
+	for (auto dest : currentAllowedDestinations)
+	{
+		displayManager->togglePlacementIndication(false, dest.gridX, dest.gridY);
+	}
+
+	currentAllowedDestinations.clear();
+
+	//Then we display the new ones
+	for (auto dest : allowedDestinations)
+	{
+		if (isValidPiecePosition(dest))
+		{
+			currentAllowedDestinations.push_back(dest);
+			displayManager->displayMessage(QString("Allow (%1, %2) ").arg(dest.gridX).arg(dest.gridY));
+			displayManager->togglePlacementIndication(true, dest.gridX, dest.gridY);
+		}
+	}
+}
+
+bool GameStateManager::isValidPiecePosition(ChessPiecesData::PiecePosition pos)
+{
+	return pos.gridX < 8 && pos.gridY < 8;
+}
+
+bool GameStateManager::isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos)
+{
+	for (auto p : currentAllowedDestinations)
+	{
+		if (pos == p)
+			return true;
+	}
+
+	return false;
+}
+
+bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, ChessPiecesData::PiecePosition destination)
+{
+	if (pieceToMove == nullptr)
+		return false;
+	if (isValidPiecePosition(destination) == false)
+		return false;
+
+	pieceToMove.get()->setPiecePosition(destination);
+	displayManager->movePieceToPosition(pieceToMove, destination.gridX, destination.gridY);
+
+	return true;
+}
+
+
 template<typename T>
-void GameStateManager::instantiatePiece(AbsChessPiece::PiecePosition position, bool isPlayer1)
+void GameStateManager::instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1)
 {
 	static_assert(std::is_base_of<AbsChessPiece, T>::value);
 
 	shared_ptr<AbsChessPiece> newChessPiece = std::make_shared<T>(position, isPlayer1);
-	allChessPieces.push_back(newChessPiece);
+	piecesList.allChessPieces.push_back(newChessPiece);
 	displayManager->summonPiece(newChessPiece);
 }
