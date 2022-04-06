@@ -19,12 +19,12 @@ namespace ChessPiecesData
 			return PiecePosition(gridX + dx, gridY + dy);
 		}
 
-		bool operator==(const PiecePosition& other)
+		const bool operator==(const PiecePosition& other) const
 		{
 			return gridX == other.gridX && gridY == other.gridY;
 		}
 
-		bool operator!=(const PiecePosition& other)
+		const bool operator!=(const PiecePosition& other) const
 		{
 			return !(*this == other);
 		}
@@ -49,23 +49,24 @@ namespace ChessPiecesData
 	{
 	public:
 		AbsChessPiece(PiecePosition initialPos, bool isPlayer1);
-		PiecePosition getPiecePosition();
+		const PiecePosition getPiecePosition();
 		void setPiecePosition(PiecePosition pos);
 		const bool isPlayer1Piece();
 
 		virtual const std::string getPieceName() = 0;
-		//virtual std::vector<Trajectory> getPossibleDestinations() = 0;
 		virtual std::vector<PiecePosition> getPossibleDestinations(ChessPiecesHolder currentPieces) = 0;
 
 	private:
 		PiecePosition position;
 		bool isPlayer1;
+	protected:
+		bool checkValidPosDefault(const PiecePosition inspectedPos, std::vector<PiecePosition>& outputToAddTo, const ChessPiecesHolder& allPieces);
 	};
 
 	class ChessPiecesHolder
 	{
 	public:
-		const std::shared_ptr<AbsChessPiece> getPieceAtPosition(PiecePosition pos);
+		const std::shared_ptr<AbsChessPiece> getPieceAtPosition(const PiecePosition pos) const;
 		std::vector<std::shared_ptr<AbsChessPiece>> allChessPieces;
 	};
 }

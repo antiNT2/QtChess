@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="QtEchec">
+    <file>images/Tower.png</file>
+    <file>images/Tower2.png</file>
     <file>images/King.png</file>
     <file>images/King2.png</file>
     <file>images/testPiece.png</file>

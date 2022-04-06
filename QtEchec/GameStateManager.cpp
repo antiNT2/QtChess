@@ -1,5 +1,6 @@
 #include "GameStateManager.h"
 #include "KingPiece.h"
+#include "TowerPiece.h"
 
 GameStateManager::GameStateManager()
 {
@@ -12,14 +13,17 @@ GameStateManager::GameStateManager(DisplayManager* _displayManager) : displayMan
 void GameStateManager::instantiateInitialPieces()
 {
 	using namespace ChessPiecesData;
-	//Summon kings
+
+	//Summon p1
 	instantiatePiece<KingPiece>(PiecePosition(4, 7), true);
+	instantiatePiece<TowerPiece>(PiecePosition(0, 7), true);
+	instantiatePiece<TowerPiece>(PiecePosition(7, 7), true);
 
 
-	//test
-	instantiatePiece<KingPiece>(PiecePosition(4, 6), true);
-
+	
+	//Summon p2
 	instantiatePiece<KingPiece>(PiecePosition(4, 0), false);
+	instantiatePiece<TowerPiece>(PiecePosition(0, 0), false);
 }
 
 void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect)
@@ -43,9 +47,10 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 			deselectCurrentPiece(); //we deselect the current one just in case
 
 			currentSelectedPiece = pieceToSelect;
-			displayManager->displayMessage(QString("+Selected " +
+
+			/*displayManager->displayMessage(QString("+Selected " +
 				QString::fromStdString(pieceToSelect.get()->getPieceName()) + " at (%1, %2) \n").
-				arg(pieceToSelect.get()->getPiecePosition().gridX).arg(pieceToSelect.get()->getPiecePosition().gridY));
+				arg(pieceToSelect.get()->getPiecePosition().gridX).arg(pieceToSelect.get()->getPiecePosition().gridY));*/
 
 			displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
 				currentSelectedPiece.get()->getPiecePosition().gridY, false);
@@ -75,9 +80,10 @@ void GameStateManager::deselectCurrentPiece()
 	if (currentSelectedPiece == nullptr)
 		return;
 
-	displayManager->displayMessage(QString("-Unselected " +
+	/*displayManager->displayMessage(QString("-Unselected " +
 		QString::fromStdString(currentSelectedPiece.get()->getPieceName()) + " at (%1, %2) \n").
-		arg(currentSelectedPiece.get()->getPiecePosition().gridX).arg(currentSelectedPiece.get()->getPiecePosition().gridY));
+		arg(currentSelectedPiece.get()->getPiecePosition().gridX).arg(currentSelectedPiece.get()->getPiecePosition().gridY));*/
+
 	displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
 		currentSelectedPiece.get()->getPiecePosition().gridY, true);
 
@@ -100,7 +106,10 @@ void GameStateManager::moveCurrentPiece(ChessPiecesData::PiecePosition destinati
 	}
 
 	if (movePiece(currentSelectedPiece, destination))
+	{
 		deselectCurrentPiece();
+		isPlayer1Turn = !isPlayer1Turn;
+	}
 }
 
 void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition> allowedDestinations)
