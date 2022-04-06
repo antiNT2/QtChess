@@ -1,30 +1,50 @@
 #include "QtEchec.h"
 #include "DisplayManager.h"
 #include "qscrollbar.h"
+#include "AbsChessPiece.h"
+#include "GameStateManager.h"
+
+void clickChessCaseTest(DisplayManager& displayManager, Ui::QtEchecClass& ui, int x, int y)
+{
+	displayManager.movePieceToPosition(ui.piece, x, y);
+	displayManager.displayMessage(QString("Move : (x = %1, y = %2) \n").arg(x).arg(y));
+}
 
 QtEchec::QtEchec(QWidget* parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-	displayManager = DisplayManager(ui.chessFrame);
+	displayManager = DisplayManager(ui.chessFrame, &ui);
 	displayManager.setUpChessUi();
-	ui.debugInfoDisplay->insertPlainText(QString::fromUtf8("Hello \n"));
+	gameStateManager = GameStateManager(&displayManager);
+	
+	displayManager.displayMessage(QString("A great slam and then some! \n"));
+	displayManager.displayMessage(QString("And begin! \n"));
 
-	int countX = 0;
-	int countY = 0;
-	for (auto&& btn : displayManager.getAllChessButtons())
+	/*for (int i = 0; i < displayManager.getNumberOfRows(); i++)
 	{
-		connect(btn, &QPushButton::clicked, [&, x = countX, y = countY]() {
-			ui.debugInfoDisplay->insertPlainText(QString("Move to x= %1 y= %2 \n").arg(x).arg(y));
-			displayManager.movePieceToPosition(ui.piece, x, y);
-			ui.debugInfoDisplay->verticalScrollBar()->setValue(ui.debugInfoDisplay->verticalScrollBar()->maximum());
-			});
-		countY++;
-		countY = countY % 8;
-		if (countY == 0)
-			countX++;
+		for (int j = 0; j < displayManager.getNumberOfColumns(); j++)
+		{
+			connect(displayManager.getButtonAtPosition(i, j), &QPushButton::clicked, [&, x = i, y = j]() {clickChessCaseTest(displayManager, ui, x, y); });
+		}
+	}*/
+
+	gameStateManager.instantiateInitialPieces();
+
+	for (auto&& spawnedPiece : displayManager.getSpawnedPieces())
+	{
+		connect(spawnedPiece.spawnedPieceVisual, &QPushButton::clicked,
+			[&]() {gameStateManager.selectPiece(spawnedPiece.pieceData); });
 	}
 
-	displayManager.togglePlacementIndication(true, 2, 0);
+	//displayManager.togglePlacementIndication(true, 2, 0);
 
+	//shared_ptr<AbsChessPiece> newPiece = std::make_shared<AbsChessPiece>(AbsChessPiece::PiecePosition(1, 5));
+	//displayManager.summonPiece(newPiece);
+
+	//
+	////manager.selectPiece(displayManager.spawnedPieces[0].pieceData);
+
+	//connect(displayManager.spawnedPieces[0].spawnedPieceVisual, &QPushButton::clicked,
+	//	[&]() {gameStateManager.selectPiece(displayManager.spawnedPieces[0].pieceData); });
 }

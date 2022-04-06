@@ -1,6 +1,8 @@
 #include "DisplayManager.h"
 #include <QPropertyAnimation>
 #include <QLabel>
+#include <QScrollbar>
+#include "KingPiece.h"
 using namespace std;
 
 #pragma region QStyle Definition
@@ -11,6 +13,12 @@ const QString yellowPlacementIndicatorFilePath = ":/QtEchec/images/yellowPlaceme
 const QString selectedCaseFilePath = ":/QtEchec/images/selectedCase.png";
 #pragma endregion
 
+#pragma region QStyle Chess Piece Display Definition
+//const QString testPieceFilePath = ":/QtEchec/images/testPiece";
+//const QString kingPieceFilePath = ":/QtEchec/images/kingPiece";
+const QString basePieceFilePath = ":/QtEchec/images/";
+#pragma endregion
+
 const int nbOfRows = 8;
 const int nbOfColumns = 8;
 const int chessCaseSize = 64;
@@ -19,7 +27,7 @@ DisplayManager::DisplayManager()
 {
 }
 
-DisplayManager::DisplayManager(QFrame* chessFrameParent) : chessFrame(chessFrameParent)
+DisplayManager::DisplayManager(QFrame* chessFrameParent, Ui::QtEchecClass* _ui) : chessFrame(chessFrameParent), ui(_ui)
 {
 }
 
@@ -34,7 +42,7 @@ void DisplayManager::setUpChessUi()
 			newChessButton->setGeometry(QRect(i * chessCaseSize, j * chessCaseSize, chessCaseSize, chessCaseSize));
 			//newChessButton->setStyleSheet(((i + j) % 2 == 0 ? redCaseStyle : yellowCaseStyle));
 			newChessButton->setStyleSheet(getButtonStyleSheet((i + j) % 2 == 0 ? true : false, false));
-			allChessButtons.push_back(newChessButton);
+			allChessCasesButtons.push_back(newChessButton);
 		}
 	}
 }
@@ -63,7 +71,7 @@ QPushButton* DisplayManager::getButtonAtPosition(int gridX, int gridY)
 {
 	int countX = 0;
 	int countY = 0;
-	for (auto&& btn : getAllChessButtons())
+	for (auto&& btn : allChessCasesButtons)
 	{
 		if (countX == gridX && countY == gridY)
 			return btn;
@@ -73,6 +81,23 @@ QPushButton* DisplayManager::getButtonAtPosition(int gridX, int gridY)
 		if (countY == 0)
 			countX++;
 	}
+}
+
+const vector<DisplayManager::SpawnedPiece>& DisplayManager::getSpawnedPieces()
+{
+	return spawnedPieces;
+}
+
+void DisplayManager::summonPiece(std::shared_ptr<AbsChessPiece> pieceData)
+{
+	SpawnedPiece newSpawnedPiece = SpawnedPiece(pieceData, createPieceVisual(pieceData));
+	spawnedPieces.push_back(newSpawnedPiece);
+}
+
+void DisplayManager::displayMessage(QString messageToShow)
+{
+	ui->debugInfoDisplay->insertPlainText(messageToShow);
+	ui->debugInfoDisplay->verticalScrollBar()->setValue(ui->debugInfoDisplay->verticalScrollBar()->maximum());
 }
 
 QString DisplayManager::getButtonStyleSheet(bool isRedCase, bool isPlacementIndicator)
@@ -98,9 +123,19 @@ QString DisplayManager::getButtonStyleSheet(bool isRedCase, bool isPlacementIndi
 	return output;
 }
 
-vector<QPushButton*>& DisplayManager::getAllChessButtons()
+//vector<QPushButton*>& DisplayManager::getAllChessButtons()
+//{
+//	return allChessButtons;
+//}
+
+const int DisplayManager::getNumberOfRows()
 {
-	return allChessButtons;
+	return nbOfRows;
+}
+
+const int DisplayManager::getNumberOfColumns()
+{
+	return nbOfColumns;
 }
 
 QPushButton* DisplayManager::createChessCase(QWidget* parent)
@@ -114,4 +149,36 @@ QPushButton* DisplayManager::createChessCase(QWidget* parent)
 	output->setFlat(true);
 
 	return output;
+}
+
+// Instantiate a QWidget with the appropriate Chess Piece visual on the board
+QPushButton* DisplayManager::createPieceVisual(std::shared_ptr<AbsChessPiece> pieceData)
+{
+	QPushButton* piece = new QPushButton(chessFrame->parentWidget());
+
+	int posX = pieceData.get()->getPiecePosition().gridX * chessCaseSize + chessFrame->geometry().x();
+	int posY = pieceData.get()->getPiecePosition().gridY * chessCaseSize + chessFrame->geometry().y();
+
+	piece->setObjectName(QString::fromUtf8("piece"));
+	piece->setGeometry(QRect(posX, posY, chessCaseSize, chessCaseSize));
+	piece->setCursor(QCursor(Qt::PointingHandCursor));
+	piece->setFocusPolicy(Qt::NoFocus);
+	piece->setIconSize(QSize(chessCaseSize, chessCaseSize));
+	piece->setFlat(true);
+
+	QString pieceImage = basePieceFilePath + QString::fromStdString(pieceData.get()->getPieceName());
+
+	/*if (dynamic_cast<KingPiece*>(pieceData.get()) != nullptr)
+		pieceImage = kingPieceFilePath;*/
+
+	pieceImage = pieceData.get()->isPlayer1Piece() ? pieceImage : pieceImage + QString("2");
+	pieceImage += QString(".png");
+	
+	piece->setStyleSheet(QString("QPushButton {\n"
+		"	  border-image: url(" + pieceImage + ") 0 0 0 0 stretch stretch;\n"
+		" }\n"));
+
+
+
+	return piece;
 }

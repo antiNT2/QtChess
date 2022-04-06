@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="QtEchec">
+    <file>images/King.png</file>
+    <file>images/King2.png</file>
+    <file>images/testPiece.png</file>
     <file>images/redPlacementIndicator.png</file>
     <file>images/yellowPlacementIndicator.png</file>
     <file>images/selectedCase.png</file>

@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_QtEchec.h"
 #include "DisplayManager.h"
+#include "GameStateManager.h"
 
 class QtEchec : public QMainWindow
 {
@@ -14,4 +15,5 @@ public:
 private:
     Ui::QtEchecClass ui;
     DisplayManager displayManager;
+    GameStateManager gameStateManager;
 };
