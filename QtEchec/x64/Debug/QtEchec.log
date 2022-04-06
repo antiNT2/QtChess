@@ -1,4 +1,2 @@
 ﻿  Reading Qt configuration (C:/Qt/6.2.4/msvc2019_64/bin/qmake)
-  GameStateManager.cpp
-C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\QtEchec\DisplayManager.h(53,43): warning C4114: same type qualifier used more than once
   QtEchec.vcxproj -> C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\x64\Debug\QtEchec.exe

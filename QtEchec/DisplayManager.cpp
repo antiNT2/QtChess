@@ -11,11 +11,12 @@ const QString redPlacementIndicatorFilePath = ":/QtEchec/images/redPlacementIndi
 const QString yellowCaseFilePath = ":/QtEchec/images/yellowCase.png";
 const QString yellowPlacementIndicatorFilePath = ":/QtEchec/images/yellowPlacementIndicator.png";
 const QString selectedCaseFilePath = ":/QtEchec/images/selectedCase.png";
+
+const std::string selectedPieceBackgroundColor = "background-color: rgb(85, 170, 127);";
+const std::string unselectedPieceBackgroundColor = "background-color: rgb(0, 0, 0, 0);";
 #pragma endregion
 
 #pragma region QStyle Chess Piece Display Definition
-//const QString testPieceFilePath = ":/QtEchec/images/testPiece";
-//const QString kingPieceFilePath = ":/QtEchec/images/kingPiece";
 const QString basePieceFilePath = ":/QtEchec/images/";
 #pragma endregion
 
@@ -60,6 +61,28 @@ void DisplayManager::movePieceToPosition(QWidget* piece, int gridX, int gridY)
 	animation->setEasingCurve(QEasingCurve::OutExpo);
 
 	animation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void DisplayManager::setBackgroundColor(QWidget* piece, int gridX, int gridY, bool transparent)
+{
+	std::string newStyleSheet = piece->styleSheet().toStdString();
+
+	auto replace = [&](std::string& str, const std::string& from, const std::string& to)
+	{
+		size_t start_pos = str.find(from);
+		if (start_pos == std::string::npos)
+			return false;
+		str.replace(start_pos, from.length(), to);
+		return true;
+	};
+
+	if (!replace(newStyleSheet, transparent ? selectedPieceBackgroundColor : unselectedPieceBackgroundColor,
+		transparent ? unselectedPieceBackgroundColor : selectedPieceBackgroundColor))
+	{
+		newStyleSheet.append(transparent ? unselectedPieceBackgroundColor : selectedPieceBackgroundColor);
+	}
+
+	piece->setStyleSheet(QString::fromStdString(newStyleSheet));
 }
 
 const DisplayManager::SpawnedPiece DisplayManager::getSpawnedPiece(const const std::shared_ptr<AbsChessPiece> piece)
@@ -110,6 +133,11 @@ void DisplayManager::movePieceToPosition(const std::shared_ptr<AbsChessPiece> pi
 	movePieceToPosition(getSpawnedPiece(piece).spawnedPieceVisual, gridX, gridY);
 }
 
+void DisplayManager::setBackgroundColor(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY, bool transparent)
+{
+	setBackgroundColor(getSpawnedPiece(piece).spawnedPieceVisual, gridX, gridY, transparent);
+}
+
 void DisplayManager::displayMessage(QString messageToShow)
 {
 	ui->debugInfoDisplay->insertPlainText(messageToShow);
@@ -124,7 +152,7 @@ QString DisplayManager::getButtonStyleSheet(bool isRedCase, bool isPlacementIndi
 	{
 		imagePath = (isRedCase ? redCaseFilePath : yellowCaseFilePath);
 	}
-	else 
+	else
 	{
 		imagePath = (isRedCase ? redPlacementIndicatorFilePath : yellowPlacementIndicatorFilePath);
 	}
@@ -132,9 +160,9 @@ QString DisplayManager::getButtonStyleSheet(bool isRedCase, bool isPlacementIndi
 	QString output = QString("QPushButton {\n"
 		"	  border-image: url(" + imagePath + ") 0 0 0 0 stretch stretch;\n"
 		" }\n"
-		"QPushButton:hover:!pressed {\n"
+		/*"QPushButton:hover:!pressed {\n"
 		"	border-image: url(" + selectedCaseFilePath + ") 0 0 0 0 stretch stretch;\n"
-		" }");
+		" }"*/);
 
 	return output;
 }
@@ -184,10 +212,8 @@ QPushButton* DisplayManager::createPieceVisual(std::shared_ptr<AbsChessPiece> pi
 
 	pieceImage = pieceData.get()->isPlayer1Piece() ? pieceImage : pieceImage + QString("2");
 	pieceImage += QString(".png");
-	
-	piece->setStyleSheet(QString("QPushButton {\n"
-		"	  border-image: url(" + pieceImage + ") 0 0 0 0 stretch stretch;\n"
-		" }\n"));
+
+	piece->setStyleSheet(QString("border-image: url(" + pieceImage + ") 0 0 0 0 stretch stretch;\n"));
 
 
 

@@ -40,10 +40,15 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 		}
 		else
 		{
+			deselectCurrentPiece(); //we deselect the current one just in case
+
 			currentSelectedPiece = pieceToSelect;
 			displayManager->displayMessage(QString("+Selected " +
 				QString::fromStdString(pieceToSelect.get()->getPieceName()) + " at (%1, %2) \n").
 				arg(pieceToSelect.get()->getPiecePosition().gridX).arg(pieceToSelect.get()->getPiecePosition().gridY));
+
+			displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
+				currentSelectedPiece.get()->getPiecePosition().gridY, false);
 
 			setCurrentAllowedDestinations(pieceToSelect.get()->getPossibleDestinations(piecesList));
 		}
@@ -67,9 +72,14 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 
 void GameStateManager::deselectCurrentPiece()
 {
+	if (currentSelectedPiece == nullptr)
+		return;
+
 	displayManager->displayMessage(QString("-Unselected " +
 		QString::fromStdString(currentSelectedPiece.get()->getPieceName()) + " at (%1, %2) \n").
 		arg(currentSelectedPiece.get()->getPiecePosition().gridX).arg(currentSelectedPiece.get()->getPiecePosition().gridY));
+	displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
+		currentSelectedPiece.get()->getPiecePosition().gridY, true);
 
 	currentSelectedPiece = nullptr;
 	setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition>());
@@ -98,7 +108,10 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 	//First we hide the current placement indicators
 	for (auto dest : currentAllowedDestinations)
 	{
-		displayManager->togglePlacementIndication(false, dest.gridX, dest.gridY);
+		if (isValidPiecePosition(dest))
+		{
+			displayManager->togglePlacementIndication(false, dest.gridX, dest.gridY);
+		}
 	}
 
 	currentAllowedDestinations.clear();
@@ -109,7 +122,7 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 		if (isValidPiecePosition(dest))
 		{
 			currentAllowedDestinations.push_back(dest);
-			displayManager->displayMessage(QString("Allow (%1, %2) ").arg(dest.gridX).arg(dest.gridY));
+			//displayManager->displayMessage(QString("Allow (%1, %2) \n").arg(dest.gridX).arg(dest.gridY));
 			displayManager->togglePlacementIndication(true, dest.gridX, dest.gridY);
 		}
 	}
@@ -117,7 +130,7 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 
 bool GameStateManager::isValidPiecePosition(ChessPiecesData::PiecePosition pos)
 {
-	return pos.gridX < 8 && pos.gridY < 8;
+	return (pos.gridX < 8 && pos.gridY < 8) && (pos.gridX >= 0 && pos.gridY >= 0);
 }
 
 bool GameStateManager::isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos)

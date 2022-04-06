@@ -23,6 +23,7 @@ public:
 	
 	void summonPiece(std::shared_ptr<AbsChessPiece> pieceData);
 	void movePieceToPosition(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY);
+	void setBackgroundColor(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY, bool transparent);
 
 	void displayMessage(QString messageToShow);
 
@@ -49,6 +50,7 @@ private:
 	QPushButton* createPieceVisual(std::shared_ptr<AbsChessPiece> pieceData);
 	QString getButtonStyleSheet(bool isRedCase, bool isPlacementIndicator);
 	void movePieceToPosition(QWidget* piece, int gridX, int gridY);
+	void setBackgroundColor(QWidget* piece, int gridX, int gridY, bool transparent);
 	QFrame* chessFrame;
 	const SpawnedPiece getSpawnedPiece(const const std::shared_ptr<AbsChessPiece> piece);
 
