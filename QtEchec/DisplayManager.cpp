@@ -48,6 +48,12 @@ void DisplayManager::setUpChessUi()
 	}
 }
 
+void DisplayManager::operator=(const DisplayManager& other)
+{
+	chessFrame = other.chessFrame;
+	ui = other.ui;
+}
+
 void DisplayManager::movePieceToPosition(QWidget* piece, int gridX, int gridY)
 {
 	QPropertyAnimation* animation = new QPropertyAnimation(piece, "geometry");
@@ -63,7 +69,7 @@ void DisplayManager::movePieceToPosition(QWidget* piece, int gridX, int gridY)
 	animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void DisplayManager::setBackgroundColor(QWidget* piece, int gridX, int gridY, bool transparent)
+void DisplayManager::setBackgroundColor(QWidget* piece, bool transparent)
 {
 	std::string newStyleSheet = piece->styleSheet().toStdString();
 
@@ -90,6 +96,17 @@ const DisplayManager::SpawnedPiece DisplayManager::getSpawnedPiece(const const s
 	for (auto&& sp : spawnedPieces)
 	{
 		if (sp.pieceData == piece)
+			return sp;
+	}
+
+	throw std::logic_error("Piece not found");
+}
+
+const DisplayManager::SpawnedPiece& DisplayManager::getSpawnedPiece(int gridX, int gridY)
+{
+	for (auto&& sp : spawnedPieces)
+	{
+		if (sp.pieceData.get()->getPiecePosition() == ChessPiecesData::PiecePosition(gridX, gridY))
 			return sp;
 	}
 
@@ -133,9 +150,9 @@ void DisplayManager::movePieceToPosition(const std::shared_ptr<AbsChessPiece> pi
 	movePieceToPosition(getSpawnedPiece(piece).spawnedPieceVisual, gridX, gridY);
 }
 
-void DisplayManager::setBackgroundColor(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY, bool transparent)
+void DisplayManager::setBackgroundColor(int gridX, int gridY, bool transparent)
 {
-	setBackgroundColor(getSpawnedPiece(piece).spawnedPieceVisual, gridX, gridY, transparent);
+	setBackgroundColor(getSpawnedPiece(gridX, gridY).spawnedPieceVisual, transparent);
 }
 
 void DisplayManager::displayMessage(QString messageToShow)

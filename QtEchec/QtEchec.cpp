@@ -11,27 +11,51 @@
 //}
 
 QtEchec::QtEchec(QWidget* parent)
-	: QMainWindow(parent)
+	: QMainWindow(parent), gameStateManager(GameStateManager())
 {
 	ui.setupUi(this);
 	displayManager = DisplayManager(ui.chessFrame, &ui);
 	displayManager.setUpChessUi();
-	gameStateManager = GameStateManager(&displayManager);
-	
+	//gameStateManager = GameStateManager(&displayManager);
+
 	displayManager.displayMessage(QString("A great slam and then some! \n"));
 	displayManager.displayMessage(QString("And begin! \n"));
 
-	gameStateManager.instantiateInitialPieces();
+
+	connect(&gameStateManager, &GameStateManager::onInstantiatePiece,
+		&displayManager, &DisplayManager::summonPiece);
+
+	connect(&gameStateManager, &GameStateManager::onNoPieceSelected,
+		[&]() {displayManager.displayMessage("Select a piece first! \n"); });
+
+	connect(&gameStateManager, &GameStateManager::onIllegalMoveChosen,
+		[&]() {displayManager.displayMessage("Illegal move! \n"); });
+
+	connect(&gameStateManager, &GameStateManager::onRemoveAllowedDestination,
+		[&](int x, int y) {displayManager.togglePlacementIndication(false, x, y); });
+
+	connect(&gameStateManager, &GameStateManager::onAddAllowedDestination,
+		[&](int x, int y) {displayManager.togglePlacementIndication(true, x, y); });
+
+	connect(&gameStateManager, &GameStateManager::onSelectPiece,
+		[&](int x, int y)	{ displayManager.setBackgroundColor(x, y, false);});
+
+	connect(&gameStateManager, &GameStateManager::onDeselectPiece,
+		[&](int x, int y) { displayManager.setBackgroundColor(x, y, true); });
+
+	/*displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
+		currentSelectedPiece.get()->getPiecePosition().gridY, true);*/
+
 	for (int i = 0; i < displayManager.getNumberOfRows(); i++)
 	{
 		for (int j = 0; j < displayManager.getNumberOfColumns(); j++)
 		{
-			connect(displayManager.getButtonAtPosition(i, j), &QPushButton::clicked, 
+			connect(displayManager.getButtonAtPosition(i, j), &QPushButton::clicked,
 				[&, x = i, y = j]() {gameStateManager.moveCurrentPiece(ChessPiecesData::PiecePosition(x, y)); });
 		}
 	}
 
-	
+	gameStateManager.instantiateInitialPieces();
 
 	for (auto&& spawnedPiece : displayManager.getSpawnedPieces())
 	{
@@ -39,14 +63,8 @@ QtEchec::QtEchec(QWidget* parent)
 			[&]() {gameStateManager.selectPiece(spawnedPiece.pieceData); });
 	}
 
-	//displayManager.togglePlacementIndication(true, 2, 0);
-
-	//shared_ptr<AbsChessPiece> newPiece = std::make_shared<AbsChessPiece>(AbsChessPiece::PiecePosition(1, 5));
-	//displayManager.summonPiece(newPiece);
-
-	//
-	////manager.selectPiece(displayManager.spawnedPieces[0].pieceData);
-
-	//connect(displayManager.spawnedPieces[0].spawnedPieceVisual, &QPushButton::clicked,
-	//	[&]() {gameStateManager.selectPiece(displayManager.spawnedPieces[0].pieceData); });
+	connect(&gameStateManager, &GameStateManager::onPieceMoved,
+		[&](const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY) 
+		{ displayManager.movePieceToPosition(piece, gridX, gridY); });
+	
 }

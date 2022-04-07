@@ -6,9 +6,9 @@ GameStateManager::GameStateManager()
 {
 }
 
-GameStateManager::GameStateManager(DisplayManager* _displayManager) : displayManager(_displayManager)
-{
-}
+//GameStateManager::GameStateManager(DisplayManager* _displayManager) /* : displayManager(_displayManager)*/
+//{
+//}
 
 void GameStateManager::instantiateInitialPieces()
 {
@@ -48,14 +48,14 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 
 			currentSelectedPiece = pieceToSelect;
 
-			/*displayManager->displayMessage(QString("+Selected " +
-				QString::fromStdString(pieceToSelect.get()->getPieceName()) + " at (%1, %2) \n").
-				arg(pieceToSelect.get()->getPiecePosition().gridX).arg(pieceToSelect.get()->getPiecePosition().gridY));*/
+			/*displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
+				currentSelectedPiece.get()->getPiecePosition().gridY, false);*/
 
-			displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
-				currentSelectedPiece.get()->getPiecePosition().gridY, false);
+			emit onSelectPiece(currentSelectedPiece.get()->getPiecePosition().gridX,
+				currentSelectedPiece.get()->getPiecePosition().gridY);
 
 			setCurrentAllowedDestinations(pieceToSelect.get()->getPossibleDestinations(piecesList));
+
 		}
 
 	}
@@ -84,8 +84,11 @@ void GameStateManager::deselectCurrentPiece()
 		QString::fromStdString(currentSelectedPiece.get()->getPieceName()) + " at (%1, %2) \n").
 		arg(currentSelectedPiece.get()->getPiecePosition().gridX).arg(currentSelectedPiece.get()->getPiecePosition().gridY));*/
 
-	displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
-		currentSelectedPiece.get()->getPiecePosition().gridY, true);
+	/*displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
+		currentSelectedPiece.get()->getPiecePosition().gridY, true);*/
+
+	emit onDeselectPiece(currentSelectedPiece.get()->getPiecePosition().gridX,
+		currentSelectedPiece.get()->getPiecePosition().gridY);
 
 	currentSelectedPiece = nullptr;
 	setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition>());
@@ -95,12 +98,14 @@ void GameStateManager::moveCurrentPiece(ChessPiecesData::PiecePosition destinati
 {
 	if (currentSelectedPiece == nullptr)
 	{
-		displayManager->displayMessage(QString("Select a piece first! \n"));
+		//displayManager->displayMessage(QString("Select a piece first! \n"));
+		emit onNoPieceSelected();
 		return;
 	}
 	if (isPositionIncludedInCurrentAllowedPos(destination) == false)
 	{
-		displayManager->displayMessage(QString("Illegal move! \n"));
+		//displayManager->displayMessage(QString("Illegal move! \n"));
+		emit onIllegalMoveChosen();
 		deselectCurrentPiece();
 		return;
 	}
@@ -119,7 +124,8 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 	{
 		if (isValidPiecePosition(dest))
 		{
-			displayManager->togglePlacementIndication(false, dest.gridX, dest.gridY);
+			//displayManager->togglePlacementIndication(false, dest.gridX, dest.gridY);
+			emit onRemoveAllowedDestination(dest.gridX, dest.gridY);
 		}
 	}
 
@@ -132,7 +138,9 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 		{
 			currentAllowedDestinations.push_back(dest);
 			//displayManager->displayMessage(QString("Allow (%1, %2) \n").arg(dest.gridX).arg(dest.gridY));
-			displayManager->togglePlacementIndication(true, dest.gridX, dest.gridY);
+			//displayManager->togglePlacementIndication(true, dest.gridX, dest.gridY);
+
+			emit onAddAllowedDestination(dest.gridX, dest.gridY);
 		}
 	}
 }
@@ -161,7 +169,8 @@ bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMov
 		return false;
 
 	pieceToMove.get()->setPiecePosition(destination);
-	displayManager->movePieceToPosition(pieceToMove, destination.gridX, destination.gridY);
+	//displayManager->movePieceToPosition(pieceToMove, destination.gridX, destination.gridY);
+	emit onPieceMoved(pieceToMove, destination.gridX, destination.gridY);
 
 	return true;
 }
@@ -174,5 +183,6 @@ void GameStateManager::instantiatePiece(ChessPiecesData::PiecePosition position,
 
 	shared_ptr<AbsChessPiece> newChessPiece = std::make_shared<T>(position, isPlayer1);
 	piecesList.allChessPieces.push_back(newChessPiece);
-	displayManager->summonPiece(newChessPiece);
+
+	emit onInstantiatePiece(newChessPiece);
 }

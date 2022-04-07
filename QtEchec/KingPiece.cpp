@@ -16,18 +16,19 @@ namespace ChessPiecesData
 		for (int i = 0; i < numberOfPos; i++)
 		{
 			PiecePosition inspectedPos = positions[i] + getPiecePosition();
-			auto inspectedPiece = currentPieces.getPieceAtPosition(inspectedPos);
-			if (inspectedPiece != nullptr)
-			{
-				if (inspectedPiece.get()->isPlayer1Piece() != isPlayer1Piece()) //we only eat enemy pieces
-				{
-					output.push_back(inspectedPos);
-				}
-			}
-			else //we can move to empty spaces
-			{
-				output.push_back(inspectedPos);
-			}
+			checkValidPosDefault(inspectedPos, output, currentPieces);
+			//auto inspectedPiece = currentPieces.getPieceAtPosition(inspectedPos);
+			//if (inspectedPiece != nullptr)
+			//{
+			//	if (inspectedPiece.get()->isPlayer1Piece() != isPlayer1Piece()) //we only eat enemy pieces
+			//	{
+			//		output.push_back(inspectedPos);
+			//	}
+			//}
+			//else //we can move to empty spaces
+			//{
+			//	output.push_back(inspectedPos);
+			//}
 		}
 
 		return output;
