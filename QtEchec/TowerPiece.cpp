@@ -21,21 +21,21 @@ namespace ChessPiecesData
 		{
 			//Up
 			if (continueCheckingUp)
-				continueCheckingUp = checkValidPosDefault(PiecePosition(0, -i) + getPiecePosition(), output, currentPieces);
+				continueCheckingUp = checkValidPosDefault(PiecePosition(0, -i) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
 
 			qDebug() << "Up " << continueCheckingUp << " | " << (PiecePosition(0, -i) + getPiecePosition()).print().c_str();
 
 			//Down
 			if (continueCheckingDown)
-				continueCheckingDown = checkValidPosDefault(PiecePosition(0, i) + getPiecePosition(), output, currentPieces);
+				continueCheckingDown = checkValidPosDefault(PiecePosition(0, i) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
 
 			//Left
 			if (continueCheckingLeft)
-				continueCheckingLeft = checkValidPosDefault(PiecePosition(-i, 0) + getPiecePosition(), output, currentPieces);
+				continueCheckingLeft = checkValidPosDefault(PiecePosition(-i, 0) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
 
 			//Right
 			if (continueCheckingRight)
-				continueCheckingRight = checkValidPosDefault(PiecePosition(i, 0) + getPiecePosition(), output, currentPieces);
+				continueCheckingRight = checkValidPosDefault(PiecePosition(i, 0) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
 		}
 
 

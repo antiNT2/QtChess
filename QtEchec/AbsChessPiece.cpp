@@ -37,7 +37,7 @@ namespace ChessPiecesData
 
 		return nullptr;
 	}
-	bool AbsChessPiece::checkValidPosDefault(const PiecePosition inspectedPos, std::vector<PiecePosition>& outputToAddTo, const ChessPiecesHolder& allPieces)
+	AbsChessPiece::FoundPieceAfterCheck AbsChessPiece::checkValidPosDefault(const PiecePosition inspectedPos, std::vector<PiecePosition>& outputToAddTo, const ChessPiecesHolder& allPieces)
 	{	
 		auto inspectedPiece = allPieces.getPieceAtPosition(inspectedPos);
 
@@ -46,15 +46,19 @@ namespace ChessPiecesData
 			if (inspectedPiece.get()->isPlayer1Piece() != isPlayer1Piece()) //we only eat enemy pieces
 			{
 				outputToAddTo.push_back(inspectedPos);
-				return true;
+				return FoundPieceAfterCheck::EnemyPiece;
+			}
+			else 
+			{
+				return FoundPieceAfterCheck::FriendlyPiece;
 			}
 		}
 		else //we can move to empty spaces
 		{
 			outputToAddTo.push_back(inspectedPos);
-			return true;
+			return FoundPieceAfterCheck::EmptySpace;
 		}
 
-		return false;
+		
 	}
 }

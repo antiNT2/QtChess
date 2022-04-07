@@ -60,7 +60,13 @@ namespace ChessPiecesData
 		PiecePosition position;
 		bool isPlayer1;
 	protected:
-		bool checkValidPosDefault(const PiecePosition inspectedPos, std::vector<PiecePosition>& outputToAddTo, const ChessPiecesHolder& allPieces);
+		enum class FoundPieceAfterCheck
+		{
+			EnemyPiece,
+			FriendlyPiece,
+			EmptySpace
+		};
+		FoundPieceAfterCheck checkValidPosDefault(const PiecePosition inspectedPos, std::vector<PiecePosition>& outputToAddTo, const ChessPiecesHolder& allPieces);
 	};
 
 	class ChessPiecesHolder
