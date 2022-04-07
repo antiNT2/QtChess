@@ -2,6 +2,8 @@
 #include "KingPiece.h"
 #include "TowerPiece.h"
 
+#include<QDebug>
+
 GameStateManager::GameStateManager()
 {
 }
@@ -20,7 +22,7 @@ void GameStateManager::instantiateInitialPieces()
 	instantiatePiece<TowerPiece>(PiecePosition(7, 7), true);
 
 
-	
+
 	//Summon p2
 	instantiatePiece<KingPiece>(PiecePosition(4, 0), false);
 	instantiatePiece<TowerPiece>(PiecePosition(0, 0), false);
@@ -44,7 +46,8 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 		}
 		else
 		{
-			deselectCurrentPiece(); //we deselect the current one just in case
+			if (currentSelectedPiece != nullptr)
+				deselectCurrentPiece(); //we deselect the current one just in case
 
 			currentSelectedPiece = pieceToSelect;
 
@@ -55,7 +58,6 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 				currentSelectedPiece.get()->getPiecePosition().gridY);
 
 			setCurrentAllowedDestinations(pieceToSelect.get()->getPossibleDestinations(piecesList));
-
 		}
 
 	}
@@ -66,12 +68,15 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 		// Are we allowed to move there to eat the piece ?
 		if (isPositionIncludedInCurrentAllowedPos(pieceToSelect.get()->getPiecePosition()))
 		{
-			//TODO: Eat the piece
+			//Eat the piece
+			moveCurrentPiece(pieceToSelect.get()->getPiecePosition());
+			destroyPiece(pieceToSelect);
 		}
 		else
 		{
 			deselectCurrentPiece();
 		}
+
 	}
 }
 
@@ -84,8 +89,8 @@ void GameStateManager::deselectCurrentPiece()
 		QString::fromStdString(currentSelectedPiece.get()->getPieceName()) + " at (%1, %2) \n").
 		arg(currentSelectedPiece.get()->getPiecePosition().gridX).arg(currentSelectedPiece.get()->getPiecePosition().gridY));*/
 
-	/*displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
-		currentSelectedPiece.get()->getPiecePosition().gridY, true);*/
+		/*displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
+			currentSelectedPiece.get()->getPiecePosition().gridY, true);*/
 
 	emit onDeselectPiece(currentSelectedPiece.get()->getPiecePosition().gridX,
 		currentSelectedPiece.get()->getPiecePosition().gridY);
@@ -137,9 +142,6 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 		if (isValidPiecePosition(dest))
 		{
 			currentAllowedDestinations.push_back(dest);
-			//displayManager->displayMessage(QString("Allow (%1, %2) \n").arg(dest.gridX).arg(dest.gridY));
-			//displayManager->togglePlacementIndication(true, dest.gridX, dest.gridY);
-
 			emit onAddAllowedDestination(dest.gridX, dest.gridY);
 		}
 	}
@@ -173,6 +175,13 @@ bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMov
 	emit onPieceMoved(pieceToMove, destination.gridX, destination.gridY);
 
 	return true;
+}
+
+void GameStateManager::destroyPiece(const std::shared_ptr<AbsChessPiece> pieceToDestroy)
+{
+	piecesList.removePiece(pieceToDestroy);
+
+	emit onRemovedPiece(pieceToDestroy);
 }
 
 

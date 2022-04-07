@@ -13,7 +13,7 @@ const QString yellowPlacementIndicatorFilePath = ":/QtEchec/images/yellowPlaceme
 const QString selectedCaseFilePath = ":/QtEchec/images/selectedCase.png";
 
 const std::string selectedPieceBackgroundColor = "background-color: rgb(85, 170, 127);";
-const std::string unselectedPieceBackgroundColor = "background-color: rgb(0, 0, 0, 0);";
+const std::string unselectedPieceBackgroundColor = "background-color: rgba(0, 0, 0, 0);";
 #pragma endregion
 
 #pragma region QStyle Chess Piece Display Definition
@@ -82,12 +82,16 @@ void DisplayManager::setBackgroundColor(QWidget* piece, bool transparent)
 		return true;
 	};
 
-	if (!replace(newStyleSheet, transparent ? selectedPieceBackgroundColor : unselectedPieceBackgroundColor,
-		transparent ? unselectedPieceBackgroundColor : selectedPieceBackgroundColor))
+	if (newStyleSheet.find(selectedPieceBackgroundColor) == std::string::npos &&
+		newStyleSheet.find(unselectedPieceBackgroundColor) == std::string::npos)
 	{
 		newStyleSheet.append(transparent ? unselectedPieceBackgroundColor : selectedPieceBackgroundColor);
 	}
 
+	replace(newStyleSheet, transparent ? selectedPieceBackgroundColor : unselectedPieceBackgroundColor,
+		transparent ? unselectedPieceBackgroundColor : selectedPieceBackgroundColor);
+
+	displayMessage(QString::fromStdString(newStyleSheet + " \n \n"));
 	piece->setStyleSheet(QString::fromStdString(newStyleSheet));
 }
 
@@ -143,6 +147,25 @@ void DisplayManager::summonPiece(std::shared_ptr<AbsChessPiece> pieceData)
 {
 	SpawnedPiece newSpawnedPiece = SpawnedPiece(pieceData, createPieceVisual(pieceData));
 	spawnedPieces.push_back(newSpawnedPiece);
+}
+
+void DisplayManager::removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove)
+{
+	SpawnedPiece spawnedPieceToRemove = getSpawnedPiece(pieceToRemove);
+
+	int foundIndex = -1;
+	for (int i = 0; i < spawnedPieces.size(); i++)
+	{
+		if (spawnedPieces[i].pieceData == spawnedPieceToRemove.pieceData)
+		{
+			foundIndex = i;
+			break;
+		}
+	}
+
+	spawnedPieceToRemove.spawnedPieceVisual->disconnect();
+	delete spawnedPieceToRemove.spawnedPieceVisual;
+	spawnedPieces.erase(spawnedPieces.begin() + foundIndex);
 }
 
 void DisplayManager::movePieceToPosition(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY)

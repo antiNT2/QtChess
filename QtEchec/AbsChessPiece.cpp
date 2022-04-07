@@ -1,5 +1,5 @@
 #include "AbsChessPiece.h"
-namespace ChessPiecesData 
+namespace ChessPiecesData
 {
 
 	AbsChessPiece::AbsChessPiece(PiecePosition initialPos, bool _isPlayer1) : position(initialPos), isPlayer1(_isPlayer1)
@@ -21,6 +21,30 @@ namespace ChessPiecesData
 		return isPlayer1;
 	}
 
+	AbsChessPiece::FoundPieceAfterCheck AbsChessPiece::checkValidPosDefault(const PiecePosition inspectedPos, std::vector<PiecePosition>& outputToAddTo, const ChessPiecesHolder& allPieces)
+	{
+		auto inspectedPiece = allPieces.getPieceAtPosition(inspectedPos);
+
+		if (inspectedPiece != nullptr)
+		{
+			if (inspectedPiece.get()->isPlayer1Piece() != isPlayer1Piece()) //we only eat enemy pieces
+			{
+				outputToAddTo.push_back(inspectedPos);
+				return FoundPieceAfterCheck::EnemyPiece;
+			}
+			else
+			{
+				return FoundPieceAfterCheck::FriendlyPiece;
+			}
+		}
+		else //we can move to empty spaces
+		{
+			outputToAddTo.push_back(inspectedPos);
+			return FoundPieceAfterCheck::EmptySpace;
+		}
+
+
+	}
 
 	const std::shared_ptr<AbsChessPiece> ChessPiecesHolder::getPieceAtPosition(const PiecePosition pos) const
 	{
@@ -37,28 +61,19 @@ namespace ChessPiecesData
 
 		return nullptr;
 	}
-	AbsChessPiece::FoundPieceAfterCheck AbsChessPiece::checkValidPosDefault(const PiecePosition inspectedPos, std::vector<PiecePosition>& outputToAddTo, const ChessPiecesHolder& allPieces)
-	{	
-		auto inspectedPiece = allPieces.getPieceAtPosition(inspectedPos);
 
-		if (inspectedPiece != nullptr)
+	void ChessPiecesHolder::removePiece(const std::shared_ptr<AbsChessPiece> pieceToRemove)
+	{
+		int foundIndex = -1;
+		for (int i = 0; i < allChessPieces.size(); i++)
 		{
-			if (inspectedPiece.get()->isPlayer1Piece() != isPlayer1Piece()) //we only eat enemy pieces
+			if (allChessPieces[i] == pieceToRemove)
 			{
-				outputToAddTo.push_back(inspectedPos);
-				return FoundPieceAfterCheck::EnemyPiece;
-			}
-			else 
-			{
-				return FoundPieceAfterCheck::FriendlyPiece;
+				foundIndex = i;
+				break;
 			}
 		}
-		else //we can move to empty spaces
-		{
-			outputToAddTo.push_back(inspectedPos);
-			return FoundPieceAfterCheck::EmptySpace;
-		}
 
-		
+		allChessPieces.erase(allChessPieces.begin() + foundIndex);
 	}
 }

@@ -25,6 +25,9 @@ QtEchec::QtEchec(QWidget* parent)
 	connect(&gameStateManager, &GameStateManager::onInstantiatePiece,
 		&displayManager, &DisplayManager::summonPiece);
 
+	connect(&gameStateManager, &GameStateManager::onRemovedPiece,
+		&displayManager, &DisplayManager::removePiece);
+
 	connect(&gameStateManager, &GameStateManager::onNoPieceSelected,
 		[&]() {displayManager.displayMessage("Select a piece first! \n"); });
 
@@ -60,7 +63,7 @@ QtEchec::QtEchec(QWidget* parent)
 	for (auto&& spawnedPiece : displayManager.getSpawnedPieces())
 	{
 		connect(spawnedPiece.spawnedPieceVisual, &QPushButton::clicked,
-			[&]() {gameStateManager.selectPiece(spawnedPiece.pieceData); });
+			[&, p = spawnedPiece.pieceData]() {gameStateManager.selectPiece(p); });
 	}
 
 	connect(&gameStateManager, &GameStateManager::onPieceMoved,

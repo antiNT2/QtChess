@@ -29,6 +29,7 @@ private:
 	bool isValidPiecePosition(ChessPiecesData::PiecePosition pos);
 	bool isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos);
 	bool movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, ChessPiecesData::PiecePosition destination);
+	void destroyPiece(const std::shared_ptr<AbsChessPiece> pieceToDestroy);
 
 	shared_ptr<AbsChessPiece> currentSelectedPiece;
 	std::vector<ChessPiecesData::PiecePosition> currentAllowedDestinations;
@@ -42,4 +43,5 @@ signals:
 	void onSelectPiece(int x, int y);
 	void onDeselectPiece(int x, int y);
 	void onPieceMoved(const std::shared_ptr<AbsChessPiece> pieceToMove, int gridX, int gridY);
+	void onRemovedPiece(const std::shared_ptr<AbsChessPiece> removedPiece);
 };
