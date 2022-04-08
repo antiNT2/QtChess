@@ -1,8 +1,12 @@
 #include "GameStateManager.h"
 #include "KingPiece.h"
 #include "TowerPiece.h"
+#include "KnightPiece.h"
 
 #include<QDebug>
+
+const int maxGridX = 7;
+const int maxGridY = 7;
 
 GameStateManager::GameStateManager()
 {
@@ -16,16 +20,11 @@ void GameStateManager::instantiateInitialPieces()
 {
 	using namespace ChessPiecesData;
 
-	//Summon p1
-	instantiatePiece<KingPiece>(PiecePosition(4, 7), true);
-	instantiatePiece<TowerPiece>(PiecePosition(0, 7), true);
-	instantiatePiece<TowerPiece>(PiecePosition(7, 7), true);
-
-
-
-	//Summon p2
-	instantiatePiece<KingPiece>(PiecePosition(4, 0), false);
-	instantiatePiece<TowerPiece>(PiecePosition(0, 0), false);
+	instantiatePieceForBothSides<KingPiece>(PiecePosition(4, 7));
+	instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
+	instantiatePieceForBothSides<KnightPiece>(PiecePosition(1, 7));
+	instantiatePieceForBothSides<KnightPiece>(PiecePosition(6, 7));
+	instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
 }
 
 void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect)
@@ -50,9 +49,6 @@ void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect
 				deselectCurrentPiece(); //we deselect the current one just in case
 
 			currentSelectedPiece = pieceToSelect;
-
-			/*displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
-				currentSelectedPiece.get()->getPiecePosition().gridY, false);*/
 
 			emit onSelectPiece(currentSelectedPiece.get()->getPiecePosition().gridX,
 				currentSelectedPiece.get()->getPiecePosition().gridY);
@@ -85,13 +81,6 @@ void GameStateManager::deselectCurrentPiece()
 	if (currentSelectedPiece == nullptr)
 		return;
 
-	/*displayManager->displayMessage(QString("-Unselected " +
-		QString::fromStdString(currentSelectedPiece.get()->getPieceName()) + " at (%1, %2) \n").
-		arg(currentSelectedPiece.get()->getPiecePosition().gridX).arg(currentSelectedPiece.get()->getPiecePosition().gridY));*/
-
-		/*displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
-			currentSelectedPiece.get()->getPiecePosition().gridY, true);*/
-
 	emit onDeselectPiece(currentSelectedPiece.get()->getPiecePosition().gridX,
 		currentSelectedPiece.get()->getPiecePosition().gridY);
 
@@ -103,13 +92,11 @@ void GameStateManager::moveCurrentPiece(ChessPiecesData::PiecePosition destinati
 {
 	if (currentSelectedPiece == nullptr)
 	{
-		//displayManager->displayMessage(QString("Select a piece first! \n"));
 		emit onNoPieceSelected();
 		return;
 	}
 	if (isPositionIncludedInCurrentAllowedPos(destination) == false)
 	{
-		//displayManager->displayMessage(QString("Illegal move! \n"));
 		emit onIllegalMoveChosen();
 		deselectCurrentPiece();
 		return;
@@ -129,7 +116,6 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 	{
 		if (isValidPiecePosition(dest))
 		{
-			//displayManager->togglePlacementIndication(false, dest.gridX, dest.gridY);
 			emit onRemoveAllowedDestination(dest.gridX, dest.gridY);
 		}
 	}
@@ -149,7 +135,7 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 
 bool GameStateManager::isValidPiecePosition(ChessPiecesData::PiecePosition pos)
 {
-	return (pos.gridX < 8 && pos.gridY < 8) && (pos.gridX >= 0 && pos.gridY >= 0);
+	return (pos.gridX <= maxGridX && pos.gridY <= maxGridY) && (pos.gridX >= 0 && pos.gridY >= 0);
 }
 
 bool GameStateManager::isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos)
@@ -171,7 +157,6 @@ bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMov
 		return false;
 
 	pieceToMove.get()->setPiecePosition(destination);
-	//displayManager->movePieceToPosition(pieceToMove, destination.gridX, destination.gridY);
 	emit onPieceMoved(pieceToMove, destination.gridX, destination.gridY);
 
 	return true;
@@ -182,8 +167,19 @@ void GameStateManager::destroyPiece(const std::shared_ptr<AbsChessPiece> pieceTo
 	piecesList.removePiece(pieceToDestroy);
 
 	emit onRemovedPiece(pieceToDestroy);
+	emit onDeselectPiece(pieceToDestroy.get()->getPiecePosition().gridX, pieceToDestroy.get()->getPiecePosition().gridY);
 }
 
+
+template<typename T>
+void GameStateManager::instantiatePieceForBothSides(ChessPiecesData::PiecePosition player1Position)
+{
+	using namespace ChessPiecesData;
+	PiecePosition player2Position = PiecePosition(player1Position.gridX, maxGridY - player1Position.gridY);
+
+	instantiatePiece<T>(player1Position, true);
+	instantiatePiece<T>(player2Position, false);
+}
 
 template<typename T>
 void GameStateManager::instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1)

@@ -57,12 +57,19 @@ private:
 
 	QPushButton* createChessCase(QWidget* parent);
 	QPushButton* createPieceVisual(std::shared_ptr<AbsChessPiece> pieceData);
-	QString getButtonStyleSheet(bool isRedCase, bool isPlacementIndicator);
+	enum class CaseType 
+	{
+		Normal,
+		PlacementIndicator,
+		DeathCase
+	};
+	QString getButtonStyleSheet(bool isRedCase, CaseType caseType);
 	void movePieceToPosition(QWidget* piece, int gridX, int gridY);
 	void setBackgroundColor(QWidget* piece, bool transparent);
 	QFrame* chessFrame;
 	const SpawnedPiece getSpawnedPiece(const std::shared_ptr<AbsChessPiece> piece);
 	const SpawnedPiece& getSpawnedPiece(int gridX, int gridY);
+	const bool pieceExistInPosition(int gridX, int gridY);
 
 	vector<QPushButton*> allChessCasesButtons;
 	vector<SpawnedPiece> spawnedPieces;

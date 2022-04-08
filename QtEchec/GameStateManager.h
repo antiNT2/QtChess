@@ -14,15 +14,12 @@ class GameStateManager : public QObject
 
 public:
 	GameStateManager();
-	//GameStateManager(DisplayManager* _displayManager);
 	void instantiateInitialPieces();
 	void selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect);
 	void deselectCurrentPiece();
-	template<typename T> void instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1);
 	void moveCurrentPiece(ChessPiecesData::PiecePosition destination);
 
 private:
-	//DisplayManager* displayManager;
 	ChessPiecesData::ChessPiecesHolder piecesList;
 	bool isPlayer1Turn = true;
 	void setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition> allowedDestinations);
@@ -30,6 +27,8 @@ private:
 	bool isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos);
 	bool movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, ChessPiecesData::PiecePosition destination);
 	void destroyPiece(const std::shared_ptr<AbsChessPiece> pieceToDestroy);
+	template<typename T> void instantiatePieceForBothSides(ChessPiecesData::PiecePosition position);
+	template<typename T> void instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1);
 
 	shared_ptr<AbsChessPiece> currentSelectedPiece;
 	std::vector<ChessPiecesData::PiecePosition> currentAllowedDestinations;

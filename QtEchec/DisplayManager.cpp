@@ -11,6 +11,7 @@ const QString redPlacementIndicatorFilePath = ":/QtEchec/images/redPlacementIndi
 const QString yellowCaseFilePath = ":/QtEchec/images/yellowCase.png";
 const QString yellowPlacementIndicatorFilePath = ":/QtEchec/images/yellowPlacementIndicator.png";
 const QString selectedCaseFilePath = ":/QtEchec/images/selectedCase.png";
+const QString deathCaseFilePath = ":/QtEchec/images/deathIndicator.png";
 
 const std::string selectedPieceBackgroundColor = "background-color: rgb(85, 170, 127);";
 const std::string unselectedPieceBackgroundColor = "background-color: rgba(0, 0, 0, 0);";
@@ -41,8 +42,7 @@ void DisplayManager::setUpChessUi()
 			QPushButton* newChessButton = createChessCase(chessFrame);
 			newChessButton->setObjectName(QString("c%1%2").arg(i, j));
 			newChessButton->setGeometry(QRect(i * chessCaseSize, j * chessCaseSize, chessCaseSize, chessCaseSize));
-			//newChessButton->setStyleSheet(((i + j) % 2 == 0 ? redCaseStyle : yellowCaseStyle));
-			newChessButton->setStyleSheet(getButtonStyleSheet((i + j) % 2 == 0 ? true : false, false));
+			newChessButton->setStyleSheet(getButtonStyleSheet((i + j) % 2 == 0 ? true : false, CaseType::Normal));
 			allChessCasesButtons.push_back(newChessButton);
 		}
 	}
@@ -91,7 +91,6 @@ void DisplayManager::setBackgroundColor(QWidget* piece, bool transparent)
 	replace(newStyleSheet, transparent ? selectedPieceBackgroundColor : unselectedPieceBackgroundColor,
 		transparent ? unselectedPieceBackgroundColor : selectedPieceBackgroundColor);
 
-	displayMessage(QString::fromStdString(newStyleSheet + " \n \n"));
 	piece->setStyleSheet(QString::fromStdString(newStyleSheet));
 }
 
@@ -117,9 +116,26 @@ const DisplayManager::SpawnedPiece& DisplayManager::getSpawnedPiece(int gridX, i
 	throw std::logic_error("Piece not found");
 }
 
+const bool DisplayManager::pieceExistInPosition(int gridX, int gridY)
+{
+	for (auto&& sp : spawnedPieces)
+	{
+		if (sp.pieceData.get()->getPiecePosition() == ChessPiecesData::PiecePosition(gridX, gridY))
+			return true;
+	}
+
+	return false;
+}
+
 void DisplayManager::togglePlacementIndication(bool show, int gridX, int gridY)
 {
-	getButtonAtPosition(gridX, gridY)->setStyleSheet(getButtonStyleSheet(((gridX + gridY) % 2 == 0 ? true : false), show));
+	//if (pieceExistInPosition(gridX, gridY) == false)
+	CaseType caseToShow = CaseType::Normal;
+	if (show)
+	{
+		caseToShow = (pieceExistInPosition(gridX, gridY)) ? CaseType::DeathCase : CaseType::PlacementIndicator;
+	}
+	getButtonAtPosition(gridX, gridY)->setStyleSheet(getButtonStyleSheet(((gridX + gridY) % 2 == 0 ? true : false), caseToShow));
 }
 
 QPushButton* DisplayManager::getButtonAtPosition(int gridX, int gridY)
@@ -184,17 +200,21 @@ void DisplayManager::displayMessage(QString messageToShow)
 	ui->debugInfoDisplay->verticalScrollBar()->setValue(ui->debugInfoDisplay->verticalScrollBar()->maximum());
 }
 
-QString DisplayManager::getButtonStyleSheet(bool isRedCase, bool isPlacementIndicator)
+QString DisplayManager::getButtonStyleSheet(bool isRedCase, CaseType caseType)
 {
 	QString imagePath = redCaseFilePath;
 
-	if (!isPlacementIndicator)
+	if (caseType == CaseType::Normal)
 	{
 		imagePath = (isRedCase ? redCaseFilePath : yellowCaseFilePath);
 	}
-	else
+	else if (caseType == CaseType::PlacementIndicator)
 	{
 		imagePath = (isRedCase ? redPlacementIndicatorFilePath : yellowPlacementIndicatorFilePath);
+	}
+	else
+	{
+		imagePath = deathCaseFilePath;
 	}
 
 	QString output = QString("QPushButton {\n"
