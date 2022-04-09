@@ -69,5 +69,7 @@ QtEchec::QtEchec(QWidget* parent)
 	connect(&gameStateManager, &GameStateManager::onPieceMoved,
 		[&](const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY) 
 		{ displayManager.movePieceToPosition(piece, gridX, gridY); });
+
+	connect(&gameStateManager, &GameStateManager::onChangePlayerTurn, &displayManager, &DisplayManager::setPlayerTurnIndicator);
 	
 }

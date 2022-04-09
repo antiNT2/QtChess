@@ -46,6 +46,8 @@ void DisplayManager::setUpChessUi()
 			allChessCasesButtons.push_back(newChessButton);
 		}
 	}
+
+	setPlayerTurnIndicator(true);
 }
 
 void DisplayManager::operator=(const DisplayManager& other)
@@ -187,6 +189,11 @@ void DisplayManager::removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove)
 void DisplayManager::movePieceToPosition(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY)
 {
 	movePieceToPosition(getSpawnedPiece(piece).spawnedPieceVisual, gridX, gridY);
+}
+
+void DisplayManager::setPlayerTurnIndicator(bool isPlayer1Turn)
+{
+	ui->playerTurnLabel->setText(QString(isPlayer1Turn ? "Player 1's turn" : "Player 2's turn"));
 }
 
 void DisplayManager::setBackgroundColor(int gridX, int gridY, bool transparent)

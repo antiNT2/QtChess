@@ -43,4 +43,5 @@ signals:
 	void onDeselectPiece(int x, int y);
 	void onPieceMoved(const std::shared_ptr<AbsChessPiece> pieceToMove, int gridX, int gridY);
 	void onRemovedPiece(const std::shared_ptr<AbsChessPiece> removedPiece);
+	void onChangePlayerTurn(bool isPlayer1Turn);
 };

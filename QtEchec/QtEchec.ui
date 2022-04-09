@@ -59,32 +59,23 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="piece">
+   <widget class="QLabel" name="playerTurnLabel">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>160</y>
-      <width>64</width>
-      <height>64</height>
+      <x>8</x>
+      <y>350</y>
+      <width>251</width>
+      <height>51</height>
      </rect>
     </property>
-    <property name="cursor">
-     <cursorShape>PointingHandCursor</cursorShape>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(85, 170, 127);</string>
+     <string notr="true">font-size: 14pt</string>
     </property>
     <property name="text">
-     <string/>
+     <string>Hello</string>
     </property>
-    <property name="pixmap">
-     <pixmap resource="QtEchec.qrc">:/QtEchec/images/testPiece.png</pixmap>
-    </property>
-    <property name="scaledContents">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>

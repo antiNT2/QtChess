@@ -106,6 +106,7 @@ void GameStateManager::moveCurrentPiece(ChessPiecesData::PiecePosition destinati
 	{
 		deselectCurrentPiece();
 		isPlayer1Turn = !isPlayer1Turn;
+		emit onChangePlayerTurn(isPlayer1Turn);
 	}
 }
 

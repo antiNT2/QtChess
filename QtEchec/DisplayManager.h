@@ -41,6 +41,7 @@ public slots:
 	void summonPiece(std::shared_ptr<AbsChessPiece> pieceData);
 	void removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove);
 	void movePieceToPosition(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY);
+	void setPlayerTurnIndicator(bool isPlayer1Turn);
 
 private:
 
