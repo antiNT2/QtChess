@@ -35,7 +35,7 @@ DisplayManager::DisplayManager(QFrame* chessFrameParent, Ui::QtEchecClass* _ui) 
 
 DisplayManager::~DisplayManager()
 {
-	deleteAllPieces();
+	//deleteAllPieces();
 }
 
 void DisplayManager::setUpChessUi()
@@ -210,12 +210,23 @@ void DisplayManager::deleteAllPieces()
 	}
 	spawnedPieces.clear();
 
+	for (int i = 0; i < nbOfRows; i++)
+	{
+		for (int j = 0; j < nbOfColumns; j++)
+		{
+			togglePlacementIndication(false, i, j);
+		}
+	}
+
 	qDebug() << "Cleared all pieces visual \n";
 }
 
 void DisplayManager::setBackgroundColor(int gridX, int gridY, bool transparent)
 {
-	setBackgroundColor(getSpawnedPiece(gridX, gridY).spawnedPieceVisual, transparent);
+	if (pieceExistInPosition(gridX, gridY))
+		setBackgroundColor(getSpawnedPiece(gridX, gridY).spawnedPieceVisual, transparent);
+	else
+		qDebug() << "Piece doesnt exist (bg color) " << gridX << " " << gridY << " \n";
 }
 
 void DisplayManager::displayMessage(QString messageToShow)

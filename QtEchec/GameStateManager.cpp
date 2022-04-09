@@ -15,8 +15,8 @@ GameStateManager::GameStateManager()
 
 GameStateManager::~GameStateManager()
 {
-	resetBoard();
-	qDebug() << "Destroyed board \n";
+	//resetBoard();
+	//qDebug() << "Destroyed board \n";
 }
 
 void GameStateManager::instantiateInitialPieces()
@@ -125,7 +125,6 @@ void GameStateManager::resetBoard()
 	piecesList.allChessPieces.clear();
 	isPlayer1Turn = true;
 	onResetBoard();
-
 }
 
 void GameStateManager::operator=(const GameStateManager& other)
@@ -147,13 +146,28 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 
 	currentAllowedDestinations.clear();
 
+	if (currentSelectedPiece == nullptr)
+		return;
+
 	//Then we display the new ones
+	ChessPiecesData::PiecePosition originalPos = currentSelectedPiece->getPiecePosition();
 	for (auto dest : allowedDestinations)
 	{
 		if (isValidPiecePosition(dest))
 		{
-			currentAllowedDestinations.push_back(dest);
-			emit onAddAllowedDestination(dest.gridX, dest.gridY);
+			//make sure moving there doesn;t places us in check
+			currentSelectedPiece->setPiecePosition(dest);
+			if (!isKingInCheckWithBoardConfiguration(isPlayer1Turn, piecesList))
+			{
+				//Restore the og position
+				currentSelectedPiece->setPiecePosition(originalPos);
+
+				currentAllowedDestinations.push_back(dest);
+				emit onAddAllowedDestination(dest.gridX, dest.gridY);
+			}
+
+			//Restore the og position
+			currentSelectedPiece->setPiecePosition(originalPos);
 		}
 	}
 }

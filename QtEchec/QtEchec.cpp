@@ -24,18 +24,6 @@ void QtEchec::resetGame()
 	gameStateManager.resetBoard();
 
 	initializeGame(true);
-
-	/*DisplayManager newDisp = DisplayManager(ui.chessFrame, &ui);
-	std::shared_ptr<AbsChessPiece> test = &gameStateManager->piecesList.allChessPieces[0];
-	test->setPiecePosition(ChessPiecesData::PiecePosition(0, 0));
-	newDisp.summonPiece(test);*/
-
-	//QString pieceImage = basePieceFilePath + QString::fromStdString(pieceData.get()->getPieceName());
-
-	//pieceImage = pieceData.get()->isPlayer1Piece() ? pieceImage : pieceImage + QString("2");
-	//pieceImage += QString(".png");
-
-	//piece->setStyleSheet(QString("border-image: url(" + pieceImage + ") 0 0 0 0 stretch stretch;\n"));
 }
 
 void QtEchec::initializeGame(bool reset = false)
