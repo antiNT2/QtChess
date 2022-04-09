@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="QtEchec">
+    <file>images/reset.png</file>
     <file>images/Knight.png</file>
     <file>images/Knight2.png</file>
     <file>images/deathIndicator.png</file>

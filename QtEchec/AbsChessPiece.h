@@ -73,6 +73,7 @@ namespace ChessPiecesData
 	{
 	public:
 		const std::shared_ptr<AbsChessPiece> getPieceAtPosition(const PiecePosition pos) const;
+		const std::shared_ptr<AbsChessPiece> getKingPiece(bool player1King);
 		void removePiece(const std::shared_ptr<AbsChessPiece> pieceToRemove);
 		std::vector<std::shared_ptr<AbsChessPiece>> allChessPieces;
 	};

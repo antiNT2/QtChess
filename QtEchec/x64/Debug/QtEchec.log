@@ -1,5 +1,2 @@
 ﻿  Reading Qt configuration (C:/Qt/6.2.4/msvc2019_64/bin/qmake)
-  DisplayManager.cpp
-C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\QtEchec\DisplayManager.cpp(99,74): warning C4114: same type qualifier used more than once
-C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\QtEchec\DisplayManager.cpp(157): warning C4715: 'DisplayManager::getButtonAtPosition': not all control paths return a value
   QtEchec.vcxproj -> C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\x64\Debug\QtEchec.exe

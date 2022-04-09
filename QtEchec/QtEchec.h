@@ -7,13 +7,17 @@
 
 class QtEchec : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    QtEchec(QWidget *parent = Q_NULLPTR);
+	QtEchec(QWidget* parent = Q_NULLPTR);
 
 private:
-    Ui::QtEchecClass ui;
-    DisplayManager displayManager;
-    GameStateManager gameStateManager;
+	Ui::QtEchecClass ui;
+	DisplayManager displayManager;
+	GameStateManager gameStateManager;
+	std::vector<QMetaObject::Connection> allConnections;
+
+	void initializeGame(bool reset);
+	void resetGame();
 };

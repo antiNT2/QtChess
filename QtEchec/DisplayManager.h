@@ -21,6 +21,7 @@ public:
 	struct SpawnedPiece;
 	DisplayManager();
 	DisplayManager(QFrame* chessFrameParent, Ui::QtEchecClass* _ui);
+	~DisplayManager();
 	void setUpChessUi();
 
 	void operator=(const DisplayManager& other);
@@ -42,6 +43,7 @@ public slots:
 	void removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove);
 	void movePieceToPosition(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY);
 	void setPlayerTurnIndicator(bool isPlayer1Turn);
+	void deleteAllPieces();
 
 private:
 

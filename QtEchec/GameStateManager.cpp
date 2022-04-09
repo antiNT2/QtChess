@@ -4,6 +4,7 @@
 #include "KnightPiece.h"
 
 #include<QDebug>
+#include <stdexcept>
 
 const int maxGridX = 7;
 const int maxGridY = 7;
@@ -12,19 +13,28 @@ GameStateManager::GameStateManager()
 {
 }
 
-//GameStateManager::GameStateManager(DisplayManager* _displayManager) /* : displayManager(_displayManager)*/
-//{
-//}
+GameStateManager::~GameStateManager()
+{
+	resetBoard();
+	qDebug() << "Destroyed board \n";
+}
 
 void GameStateManager::instantiateInitialPieces()
 {
 	using namespace ChessPiecesData;
 
-	instantiatePieceForBothSides<KingPiece>(PiecePosition(4, 7));
+	/*instantiatePieceForBothSides<KingPiece>(PiecePosition(4, 7));
 	instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
 	instantiatePieceForBothSides<KnightPiece>(PiecePosition(1, 7));
 	instantiatePieceForBothSides<KnightPiece>(PiecePosition(6, 7));
-	instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
+	instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));*/
+
+	instantiatePiece<KingPiece>(PiecePosition(7, 3), false);
+
+	instantiatePiece<KingPiece>(PiecePosition(5, 3), true);
+	instantiatePiece<TowerPiece>(PiecePosition(6, 7), true);
+
+	qDebug() << "Finished instantiating new pieces \n";
 }
 
 void GameStateManager::selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect)
@@ -110,6 +120,20 @@ void GameStateManager::moveCurrentPiece(ChessPiecesData::PiecePosition destinati
 	}
 }
 
+void GameStateManager::resetBoard()
+{
+	piecesList.allChessPieces.clear();
+	isPlayer1Turn = true;
+	onResetBoard();
+
+}
+
+void GameStateManager::operator=(const GameStateManager& other)
+{
+	isPlayer1Turn = other.isPlayer1Turn;
+	piecesList = other.piecesList;
+}
+
 void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition> allowedDestinations)
 {
 	//First we hide the current placement indicators
@@ -160,6 +184,8 @@ bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMov
 	pieceToMove.get()->setPiecePosition(destination);
 	emit onPieceMoved(pieceToMove, destination.gridX, destination.gridY);
 
+	verifyCheckAndCheckmate();
+
 	return true;
 }
 
@@ -169,6 +195,90 @@ void GameStateManager::destroyPiece(const std::shared_ptr<AbsChessPiece> pieceTo
 
 	emit onRemovedPiece(pieceToDestroy);
 	emit onDeselectPiece(pieceToDestroy.get()->getPiecePosition().gridX, pieceToDestroy.get()->getPiecePosition().gridY);
+}
+
+bool GameStateManager::isPlayerInCheckmate(bool player1)
+{
+	using namespace ChessPiecesData;
+	bool output = true;
+
+	if (isKingInCheckWithBoardConfiguration(player1, piecesList))
+	{
+		std::vector possibleEscapes = piecesList.getKingPiece(player1).get()->getPossibleDestinations(piecesList);
+		PiecePosition initialPos = piecesList.getKingPiece(player1).get()->getPiecePosition();
+
+		for (auto&& escapeDestination : possibleEscapes)
+		{
+			if (isValidPiecePosition(escapeDestination) == false)
+				continue; //dont check invalid positions
+
+
+			ChessPiecesHolder possiblePiecesConfiguration = piecesList;
+			possiblePiecesConfiguration.getKingPiece(player1).get()->setPiecePosition(escapeDestination);
+
+			if (!isKingInCheckWithBoardConfiguration(player1, possiblePiecesConfiguration))
+			{
+				//There is one configuration where we're not in check -> no checkmate :)
+				qDebug() << "We can escape at " << escapeDestination.print().c_str() << (player1 ? " PLAYER 1" : " PLAYER 2");
+				output = false;
+				break;
+			}
+			else
+			{
+				qDebug() << "Can't escape at " << escapeDestination.print().c_str() << (player1 ? " PLAYER 1" : " PLAYER 2");
+			}
+		}
+
+		piecesList.getKingPiece(player1).get()->setPiecePosition(initialPos);
+	}
+	else
+	{
+		output = false;
+	}
+
+	return output;
+
+}
+
+bool GameStateManager::isKingInCheckWithBoardConfiguration(bool player1King, ChessPiecesData::ChessPiecesHolder configuration)
+{
+	using namespace ChessPiecesData;
+	PiecePosition kingPos = configuration.getKingPiece(player1King).get()->getPiecePosition();
+
+	// We check if any of the allowed movements of all the board pieces is on the king's position
+	for (auto&& piece : configuration.allChessPieces)
+	{
+		std::vector allowedDestinations = piece.get()->getPossibleDestinations(configuration);
+		for (auto&& destination : allowedDestinations)
+		{
+			if (isValidPiecePosition(destination))
+			{
+				if (destination == kingPos)
+					return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void GameStateManager::verifyCheckAndCheckmate()
+{
+	if (isPlayerInCheckmate(!isPlayer1Turn))
+	{
+		emit onVerifyCheckmate(!isPlayer1Turn);
+		return;
+	}
+	else if (isPlayerInCheckmate(isPlayer1Turn))
+	{
+		emit onVerifyCheckmate(isPlayer1Turn);
+		return;
+	}
+
+	if (isKingInCheckWithBoardConfiguration(!isPlayer1Turn, piecesList))
+		emit onVerifyKingInCheck(!isPlayer1Turn);
+	else if (isKingInCheckWithBoardConfiguration(isPlayer1Turn, piecesList))
+		emit onVerifyKingInCheck(isPlayer1Turn);
 }
 
 

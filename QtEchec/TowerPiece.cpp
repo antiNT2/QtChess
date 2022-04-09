@@ -23,8 +23,6 @@ namespace ChessPiecesData
 			if (continueCheckingUp)
 				continueCheckingUp = checkValidPosDefault(PiecePosition(0, -i) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
 
-			qDebug() << "Up " << continueCheckingUp << " | " << (PiecePosition(0, -i) + getPiecePosition()).print().c_str();
-
 			//Down
 			if (continueCheckingDown)
 				continueCheckingDown = checkValidPosDefault(PiecePosition(0, i) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;

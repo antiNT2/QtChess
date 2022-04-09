@@ -14,13 +14,18 @@ class GameStateManager : public QObject
 
 public:
 	GameStateManager();
+	~GameStateManager();
 	void instantiateInitialPieces();
 	void selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect);
 	void deselectCurrentPiece();
 	void moveCurrentPiece(ChessPiecesData::PiecePosition destination);
+	void resetBoard();
+	void operator=(const GameStateManager& other);
+
+	ChessPiecesData::ChessPiecesHolder piecesList;
 
 private:
-	ChessPiecesData::ChessPiecesHolder piecesList;
+	
 	bool isPlayer1Turn = true;
 	void setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition> allowedDestinations);
 	bool isValidPiecePosition(ChessPiecesData::PiecePosition pos);
@@ -29,6 +34,9 @@ private:
 	void destroyPiece(const std::shared_ptr<AbsChessPiece> pieceToDestroy);
 	template<typename T> void instantiatePieceForBothSides(ChessPiecesData::PiecePosition position);
 	template<typename T> void instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1);
+	bool isPlayerInCheckmate(bool player1);
+	bool isKingInCheckWithBoardConfiguration(bool player1King, ChessPiecesData::ChessPiecesHolder configuration);
+	void verifyCheckAndCheckmate();
 
 	shared_ptr<AbsChessPiece> currentSelectedPiece;
 	std::vector<ChessPiecesData::PiecePosition> currentAllowedDestinations;
@@ -44,4 +52,7 @@ signals:
 	void onPieceMoved(const std::shared_ptr<AbsChessPiece> pieceToMove, int gridX, int gridY);
 	void onRemovedPiece(const std::shared_ptr<AbsChessPiece> removedPiece);
 	void onChangePlayerTurn(bool isPlayer1Turn);
+	void onVerifyKingInCheck(bool isPlayer1King);
+	void onVerifyCheckmate(bool isPlayer1King);
+	void onResetBoard();
 };

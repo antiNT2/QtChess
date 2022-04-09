@@ -62,6 +62,20 @@ namespace ChessPiecesData
 		return nullptr;
 	}
 
+	const std::shared_ptr<AbsChessPiece> ChessPiecesHolder::getKingPiece(bool player1King)
+	{
+		//We look for the king piece
+		for (auto&& piece : allChessPieces)
+		{
+			if (piece.get()->getPieceName() == "King" && piece.get()->isPlayer1Piece() == player1King)
+			{
+				return piece;
+			}
+		}
+
+		return nullptr;
+	}
+
 	void ChessPiecesHolder::removePiece(const std::shared_ptr<AbsChessPiece> pieceToRemove)
 	{
 		int foundIndex = -1;

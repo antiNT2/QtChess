@@ -1,75 +1,117 @@
 #include "QtEchec.h"
 #include "DisplayManager.h"
 #include "qscrollbar.h"
-//#include "AbsChessPiece.h"
 #include "GameStateManager.h"
 
-//void clickChessCaseTest(DisplayManager& displayManager, Ui::QtEchecClass& ui, int x, int y)
-//{
-//	displayManager.movePieceToPosition(ui.piece, x, y);
-//	displayManager.displayMessage(QString("Move : (x = %1, y = %2) \n").arg(x).arg(y));
-//}
-
 QtEchec::QtEchec(QWidget* parent)
-	: QMainWindow(parent), gameStateManager(GameStateManager())
+	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-	displayManager = DisplayManager(ui.chessFrame, &ui);
-	displayManager.setUpChessUi();
-	//gameStateManager = GameStateManager(&displayManager);
+	initializeGame(false);
+	connect(ui.resetButton, &QPushButton::clicked,
+		this, [&]() {resetGame(); });
+}
+
+void QtEchec::resetGame()
+{
+	for (auto conn : allConnections)
+	{
+		QObject::disconnect(conn);
+	}
+
+	allConnections.clear();
+
+	gameStateManager.resetBoard();
+
+	initializeGame(true);
+
+	/*DisplayManager newDisp = DisplayManager(ui.chessFrame, &ui);
+	std::shared_ptr<AbsChessPiece> test = &gameStateManager->piecesList.allChessPieces[0];
+	test->setPiecePosition(ChessPiecesData::PiecePosition(0, 0));
+	newDisp.summonPiece(test);*/
+
+	//QString pieceImage = basePieceFilePath + QString::fromStdString(pieceData.get()->getPieceName());
+
+	//pieceImage = pieceData.get()->isPlayer1Piece() ? pieceImage : pieceImage + QString("2");
+	//pieceImage += QString(".png");
+
+	//piece->setStyleSheet(QString("border-image: url(" + pieceImage + ") 0 0 0 0 stretch stretch;\n"));
+}
+
+void QtEchec::initializeGame(bool reset = false)
+{
+	using namespace std;
+
+	if (reset == false)
+	{
+		gameStateManager = GameStateManager();
+
+		displayManager = DisplayManager(ui.chessFrame, &ui);
+
+		displayManager.setUpChessUi();
+	}
+
 
 	displayManager.displayMessage(QString("A great slam and then some! \n"));
 	displayManager.displayMessage(QString("And begin! \n"));
 
 
-	connect(&gameStateManager, &GameStateManager::onInstantiatePiece,
-		&displayManager, &DisplayManager::summonPiece);
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onInstantiatePiece,
+		&displayManager, &DisplayManager::summonPiece));
 
-	connect(&gameStateManager, &GameStateManager::onRemovedPiece,
-		&displayManager, &DisplayManager::removePiece);
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onRemovedPiece,
+		&displayManager, &DisplayManager::removePiece));
 
-	connect(&gameStateManager, &GameStateManager::onNoPieceSelected,
-		[&]() {displayManager.displayMessage("Select a piece first! \n"); });
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onNoPieceSelected,
+		[&]() {displayManager.displayMessage("Select a piece first! \n"); }));
 
-	connect(&gameStateManager, &GameStateManager::onIllegalMoveChosen,
-		[&]() {displayManager.displayMessage("Illegal move! \n"); });
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onIllegalMoveChosen,
+		[&]() {displayManager.displayMessage("Illegal move! \n"); }));
 
-	connect(&gameStateManager, &GameStateManager::onRemoveAllowedDestination,
-		[&](int x, int y) {displayManager.togglePlacementIndication(false, x, y); });
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onRemoveAllowedDestination,
+		[&](int x, int y) {displayManager.togglePlacementIndication(false, x, y); }));
 
-	connect(&gameStateManager, &GameStateManager::onAddAllowedDestination,
-		[&](int x, int y) {displayManager.togglePlacementIndication(true, x, y); });
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onAddAllowedDestination,
+		[&](int x, int y) {displayManager.togglePlacementIndication(true, x, y); }));
 
-	connect(&gameStateManager, &GameStateManager::onSelectPiece,
-		[&](int x, int y)	{ displayManager.setBackgroundColor(x, y, false);});
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onSelectPiece,
+		[&](int x, int y) { displayManager.setBackgroundColor(x, y, false); }));
 
-	connect(&gameStateManager, &GameStateManager::onDeselectPiece,
-		[&](int x, int y) { displayManager.setBackgroundColor(x, y, true); });
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onDeselectPiece,
+		[&](int x, int y) { displayManager.setBackgroundColor(x, y, true); }));
 
-	/*displayManager->setBackgroundColor(currentSelectedPiece, currentSelectedPiece.get()->getPiecePosition().gridX,
-		currentSelectedPiece.get()->getPiecePosition().gridY, true);*/
 
 	for (int i = 0; i < displayManager.getNumberOfRows(); i++)
 	{
 		for (int j = 0; j < displayManager.getNumberOfColumns(); j++)
 		{
-			connect(displayManager.getButtonAtPosition(i, j), &QPushButton::clicked,
-				[&, x = i, y = j]() {gameStateManager.moveCurrentPiece(ChessPiecesData::PiecePosition(x, y)); });
+			allConnections.push_back(connect(displayManager.getButtonAtPosition(i, j), &QPushButton::clicked,
+				[&, x = i, y = j]() {gameStateManager.moveCurrentPiece(ChessPiecesData::PiecePosition(x, y)); }));
 		}
 	}
+
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onChangePlayerTurn, &displayManager,
+		&DisplayManager::setPlayerTurnIndicator));
+
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onVerifyKingInCheck,
+		[&](bool isKing1InCheck) {displayManager.
+		displayMessage(isKing1InCheck ? "PLAYER 1's KING IN CHECK \n" : "Player 2's KING IN CHECK \n"); }));
+
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onVerifyCheckmate,
+		[&](bool isPlayer1Checkmate) {displayManager.
+		displayMessage(isPlayer1Checkmate ? "PLAYER 2 WINS \n" : "PLAYER 1 WINS \n"); }));
+
+	connect(&gameStateManager, &GameStateManager::onResetBoard, &displayManager, &DisplayManager::deleteAllPieces);
 
 	gameStateManager.instantiateInitialPieces();
 
 	for (auto&& spawnedPiece : displayManager.getSpawnedPieces())
 	{
-		connect(spawnedPiece.spawnedPieceVisual, &QPushButton::clicked,
-			[&, p = spawnedPiece.pieceData]() {gameStateManager.selectPiece(p); });
+		allConnections.push_back(connect(spawnedPiece.spawnedPieceVisual, &QPushButton::clicked,
+			[&, p = spawnedPiece.pieceData]() {gameStateManager.selectPiece(p); }));
 	}
 
-	connect(&gameStateManager, &GameStateManager::onPieceMoved,
-		[&](const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY) 
-		{ displayManager.movePieceToPosition(piece, gridX, gridY); });
-
-	connect(&gameStateManager, &GameStateManager::onChangePlayerTurn, &displayManager, &DisplayManager::setPlayerTurnIndicator);
-	
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onPieceMoved,
+		[&](const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY)
+		{ displayManager.movePieceToPosition(piece, gridX, gridY); }));
 }

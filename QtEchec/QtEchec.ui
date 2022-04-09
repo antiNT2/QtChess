@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>832</width>
-    <height>699</height>
+    <height>712</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -76,6 +76,23 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="resetButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>630</y>
+      <width>71</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reset</string>
+    </property>
+    <property name="icon">
+     <iconset resource="QtEchec.qrc">
+      <normaloff>:/QtEchec/images/reset.png</normaloff>:/QtEchec/images/reset.png</iconset>
     </property>
    </widget>
   </widget>

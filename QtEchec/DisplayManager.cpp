@@ -33,6 +33,11 @@ DisplayManager::DisplayManager(QFrame* chessFrameParent, Ui::QtEchecClass* _ui) 
 {
 }
 
+DisplayManager::~DisplayManager()
+{
+	deleteAllPieces();
+}
+
 void DisplayManager::setUpChessUi()
 {
 	for (size_t i = 0; i < nbOfRows; i++)
@@ -131,7 +136,6 @@ const bool DisplayManager::pieceExistInPosition(int gridX, int gridY)
 
 void DisplayManager::togglePlacementIndication(bool show, int gridX, int gridY)
 {
-	//if (pieceExistInPosition(gridX, gridY) == false)
 	CaseType caseToShow = CaseType::Normal;
 	if (show)
 	{
@@ -165,6 +169,8 @@ void DisplayManager::summonPiece(std::shared_ptr<AbsChessPiece> pieceData)
 {
 	SpawnedPiece newSpawnedPiece = SpawnedPiece(pieceData, createPieceVisual(pieceData));
 	spawnedPieces.push_back(newSpawnedPiece);
+
+	qDebug() << "Summoned " << pieceData.get()->getPieceName().c_str() << "\n";
 }
 
 void DisplayManager::removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove)
@@ -194,6 +200,17 @@ void DisplayManager::movePieceToPosition(const std::shared_ptr<AbsChessPiece> pi
 void DisplayManager::setPlayerTurnIndicator(bool isPlayer1Turn)
 {
 	ui->playerTurnLabel->setText(QString(isPlayer1Turn ? "Player 1's turn" : "Player 2's turn"));
+}
+
+void DisplayManager::deleteAllPieces()
+{
+	for (auto&& spawnedPiece : spawnedPieces)
+	{
+		delete spawnedPiece.spawnedPieceVisual;
+	}
+	spawnedPieces.clear();
+
+	qDebug() << "Cleared all pieces visual \n";
 }
 
 void DisplayManager::setBackgroundColor(int gridX, int gridY, bool transparent)
@@ -226,10 +243,7 @@ QString DisplayManager::getButtonStyleSheet(bool isRedCase, CaseType caseType)
 
 	QString output = QString("QPushButton {\n"
 		"	  border-image: url(" + imagePath + ") 0 0 0 0 stretch stretch;\n"
-		" }\n"
-		/*"QPushButton:hover:!pressed {\n"
-		"	border-image: url(" + selectedCaseFilePath + ") 0 0 0 0 stretch stretch;\n"
-		" }"*/);
+		" }\n");
 
 	return output;
 }
@@ -274,15 +288,14 @@ QPushButton* DisplayManager::createPieceVisual(std::shared_ptr<AbsChessPiece> pi
 
 	QString pieceImage = basePieceFilePath + QString::fromStdString(pieceData.get()->getPieceName());
 
-	/*if (dynamic_cast<KingPiece*>(pieceData.get()) != nullptr)
-		pieceImage = kingPieceFilePath;*/
-
 	pieceImage = pieceData.get()->isPlayer1Piece() ? pieceImage : pieceImage + QString("2");
 	pieceImage += QString(".png");
 
 	piece->setStyleSheet(QString("border-image: url(" + pieceImage + ") 0 0 0 0 stretch stretch;\n"));
 
+	piece->show();
 
+	qDebug() << "Summoned " << pieceData->getPieceName().c_str() << " at " << posX << " " << posY;
 
 	return piece;
 }
