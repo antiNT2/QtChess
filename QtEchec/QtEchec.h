@@ -14,7 +14,7 @@ public:
 
 private:
 	Ui::QtEchecClass ui;
-	DisplayManager displayManager;
+	ChessDisplay::DisplayManager displayManager;
 	GameStateManager gameStateManager;
 	std::vector<QMetaObject::Connection> allConnections;
 

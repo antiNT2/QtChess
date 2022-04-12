@@ -1,5 +1,4 @@
 #pragma once
-// #include "DisplayManager.h"
 #include "AbsChessPiece.h"
 
 #include <QObject>
@@ -37,9 +36,11 @@ private:
 	bool isPlayerInCheckmate(bool player1);
 	bool isKingInCheckWithBoardConfiguration(bool player1King, ChessPiecesData::ChessPiecesHolder configuration);
 	void verifyCheckAndCheckmate();
+	void checkKingPieceCounter(shared_ptr<AbsChessPiece> pieceToCheck, bool remove);
 
 	shared_ptr<AbsChessPiece> currentSelectedPiece;
 	std::vector<ChessPiecesData::PiecePosition> currentAllowedDestinations;
+	static int kingPieceCounter;
 
 signals:
 	void onNoPieceSelected();
@@ -55,4 +56,5 @@ signals:
 	void onVerifyKingInCheck(bool isPlayer1King);
 	void onVerifyCheckmate(bool isPlayer1King);
 	void onResetBoard();
+	void onTooManyKings();
 };

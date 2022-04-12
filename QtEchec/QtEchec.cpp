@@ -29,6 +29,7 @@ void QtEchec::resetGame()
 void QtEchec::initializeGame(bool reset = false)
 {
 	using namespace std;
+	using ChessDisplay::DisplayManager;
 
 	if (reset == false)
 	{
@@ -40,6 +41,8 @@ void QtEchec::initializeGame(bool reset = false)
 	}
 
 
+	ui.debugInfoDisplay->clear();
+	// Greet the players with a cuphead reference
 	displayManager.displayMessage(QString("A great slam and then some! \n"));
 	displayManager.displayMessage(QString("And begin! \n"));
 
@@ -90,6 +93,7 @@ void QtEchec::initializeGame(bool reset = false)
 		displayMessage(isPlayer1Checkmate ? "PLAYER 2 WINS \n" : "PLAYER 1 WINS \n"); }));
 
 	connect(&gameStateManager, &GameStateManager::onResetBoard, &displayManager, &DisplayManager::deleteAllPieces);
+	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onTooManyKings, [&]() {displayManager.displayMessage("TOO MANY KINGS! \n"); }));
 
 	gameStateManager.instantiateInitialPieces();
 
@@ -101,5 +105,5 @@ void QtEchec::initializeGame(bool reset = false)
 
 	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onPieceMoved,
 		[&](const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY)
-		{ displayManager.movePieceToPosition(piece, gridX, gridY); }));
+		{ displayManager.movePieceToPosition(piece, gridX, gridY); }));	
 }

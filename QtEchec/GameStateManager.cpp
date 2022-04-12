@@ -2,6 +2,7 @@
 #include "KingPiece.h"
 #include "TowerPiece.h"
 #include "KnightPiece.h"
+#include "BishopPiece.h"
 
 #include<QDebug>
 #include <stdexcept>
@@ -9,30 +10,35 @@
 const int maxGridX = 7;
 const int maxGridY = 7;
 
+int GameStateManager::kingPieceCounter = 0;
+
 GameStateManager::GameStateManager()
 {
 }
 
 GameStateManager::~GameStateManager()
 {
-	//resetBoard();
-	//qDebug() << "Destroyed board \n";
 }
 
 void GameStateManager::instantiateInitialPieces()
 {
 	using namespace ChessPiecesData;
 
-	/*instantiatePieceForBothSides<KingPiece>(PiecePosition(4, 7));
+	instantiatePieceForBothSides<KingPiece>(PiecePosition(4, 7));
 	instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
 	instantiatePieceForBothSides<KnightPiece>(PiecePosition(1, 7));
 	instantiatePieceForBothSides<KnightPiece>(PiecePosition(6, 7));
-	instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));*/
+	instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
 
-	instantiatePiece<KingPiece>(PiecePosition(7, 3), false);
+	instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
+	instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
+
+	//instantiatePiece<KingPiece>(PiecePosition(5, 5), true);
+
+	/*instantiatePiece<KingPiece>(PiecePosition(7, 3), false);
 
 	instantiatePiece<KingPiece>(PiecePosition(5, 3), true);
-	instantiatePiece<TowerPiece>(PiecePosition(6, 7), true);
+	instantiatePiece<TowerPiece>(PiecePosition(6, 7), true);*/
 
 	qDebug() << "Finished instantiating new pieces \n";
 }
@@ -124,6 +130,7 @@ void GameStateManager::resetBoard()
 {
 	piecesList.allChessPieces.clear();
 	isPlayer1Turn = true;
+	kingPieceCounter = 0;
 	onResetBoard();
 }
 
@@ -206,6 +213,7 @@ bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMov
 void GameStateManager::destroyPiece(const std::shared_ptr<AbsChessPiece> pieceToDestroy)
 {
 	piecesList.removePiece(pieceToDestroy);
+	checkKingPieceCounter(pieceToDestroy, true);
 
 	emit onRemovedPiece(pieceToDestroy);
 	emit onDeselectPiece(pieceToDestroy.get()->getPiecePosition().gridX, pieceToDestroy.get()->getPiecePosition().gridY);
@@ -295,6 +303,22 @@ void GameStateManager::verifyCheckAndCheckmate()
 		emit onVerifyKingInCheck(isPlayer1Turn);
 }
 
+void GameStateManager::checkKingPieceCounter(shared_ptr<AbsChessPiece> pieceToCheck, bool remove)
+{
+	if (pieceToCheck.get()->getPieceName() == "King")
+	{
+		if (remove)
+			kingPieceCounter--;
+		else
+			kingPieceCounter++;
+
+	}
+
+	if (kingPieceCounter > 2)
+		emit onTooManyKings();
+
+}
+
 
 template<typename T>
 void GameStateManager::instantiatePieceForBothSides(ChessPiecesData::PiecePosition player1Position)
@@ -313,6 +337,8 @@ void GameStateManager::instantiatePiece(ChessPiecesData::PiecePosition position,
 
 	shared_ptr<AbsChessPiece> newChessPiece = std::make_shared<T>(position, isPlayer1);
 	piecesList.allChessPieces.push_back(newChessPiece);
+
+	checkKingPieceCounter(newChessPiece, false);
 
 	emit onInstantiatePiece(newChessPiece);
 }
