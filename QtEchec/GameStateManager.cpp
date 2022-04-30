@@ -7,8 +7,13 @@
 #include<QDebug>
 #include <stdexcept>
 
-const int maxGridX = 7;
-const int maxGridY = 7;
+const int MAX_GRID_X = 7;
+const int MIN_GRID_X = 0;
+
+const int MAX_GRID_Y = 7;
+const int MIN_GRID_Y = 0;
+
+const int INITIAL_KING_PIECE_COUNTER = 0;
 
 int GameStateManager::kingPieceCounter = 0;
 
@@ -33,12 +38,6 @@ void GameStateManager::instantiateInitialPieces()
 	instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
 	instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
 
-	//instantiatePiece<KingPiece>(PiecePosition(5, 5), true);
-
-	/*instantiatePiece<KingPiece>(PiecePosition(7, 3), false);
-
-	instantiatePiece<KingPiece>(PiecePosition(5, 3), true);
-	instantiatePiece<TowerPiece>(PiecePosition(6, 7), true);*/
 
 	qDebug() << "Finished instantiating new pieces \n";
 }
@@ -130,7 +129,7 @@ void GameStateManager::resetBoard()
 {
 	piecesList.allChessPieces.clear();
 	isPlayer1Turn = true;
-	kingPieceCounter = 0;
+	kingPieceCounter = INITIAL_KING_PIECE_COUNTER;
 	onResetBoard();
 }
 
@@ -181,7 +180,7 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 
 bool GameStateManager::isValidPiecePosition(ChessPiecesData::PiecePosition pos)
 {
-	return (pos.gridX <= maxGridX && pos.gridY <= maxGridY) && (pos.gridX >= 0 && pos.gridY >= 0);
+	return (pos.gridX <= MAX_GRID_X && pos.gridY <= MAX_GRID_Y) && (pos.gridX >= MIN_GRID_X && pos.gridY >= MIN_GRID_Y);
 }
 
 bool GameStateManager::isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos)
@@ -305,7 +304,7 @@ void GameStateManager::verifyCheckAndCheckmate()
 
 void GameStateManager::checkKingPieceCounter(shared_ptr<AbsChessPiece> pieceToCheck, bool remove)
 {
-	if (pieceToCheck.get()->getPieceName() == "King")
+	if (pieceToCheck.get()->getPieceName() == ChessPiecesData::PieceType::King)
 	{
 		if (remove)
 			kingPieceCounter--;
@@ -324,7 +323,7 @@ template<typename T>
 void GameStateManager::instantiatePieceForBothSides(ChessPiecesData::PiecePosition player1Position)
 {
 	using namespace ChessPiecesData;
-	PiecePosition player2Position = PiecePosition(player1Position.gridX, maxGridY - player1Position.gridY);
+	PiecePosition player2Position = PiecePosition(player1Position.gridX, MAX_GRID_Y - player1Position.gridY);
 
 	instantiatePiece<T>(player1Position, true);
 	instantiatePiece<T>(player2Position, false);

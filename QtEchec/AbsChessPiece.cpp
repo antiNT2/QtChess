@@ -67,7 +67,7 @@ namespace ChessPiecesData
 		//We look for the king piece
 		for (auto&& piece : allChessPieces)
 		{
-			if (piece.get()->getPieceName() == "King" && piece.get()->isPlayer1Piece() == player1King)
+			if (piece.get()->getPieceName() == PieceType::King && piece.get()->isPlayer1Piece() == player1King)
 			{
 				return piece;
 			}

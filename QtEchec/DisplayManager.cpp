@@ -23,9 +23,12 @@ namespace ChessDisplay
 	const QString basePieceFilePath = ":/QtEchec/images/";
 #pragma endregion
 
-	const int nbOfRows = 8;
-	const int nbOfColumns = 8;
-	const int chessCaseSize = 64;
+	const int ORIGIN_POSITION = 0;
+	const int CASE_BASE_SIZE = 0;
+	const int NB_OF_ROWS = 8;
+	const int NB_OF_COLUMNS = 8;
+	const int CHESS_CASE_SIZE = 64;
+	const int MOVE_ANIMATION_DURATION = 350;
 
 	DisplayManager::DisplayManager()
 	{
@@ -41,14 +44,15 @@ namespace ChessDisplay
 
 	void DisplayManager::setUpChessUi()
 	{
-		for (size_t i = 0; i < nbOfRows; i++)
+		for (size_t i = 0; i < NB_OF_ROWS; i++)
 		{
-			for (size_t j = 0; j < nbOfColumns; j++)
+			for (size_t j = 0; j < NB_OF_COLUMNS; j++)
 			{
 				QPushButton* newChessButton = createChessCase(chessFrame);
 				newChessButton->setObjectName(QString("c%1%2").arg(i, j));
-				newChessButton->setGeometry(QRect(i * chessCaseSize, j * chessCaseSize, chessCaseSize, chessCaseSize));
-				newChessButton->setStyleSheet(getButtonStyleSheet((i + j) % 2 == 0 ? true : false, CaseType::Normal));
+				newChessButton->setGeometry(QRect(i * CHESS_CASE_SIZE, j * CHESS_CASE_SIZE, CHESS_CASE_SIZE, CHESS_CASE_SIZE));
+				newChessButton->setStyleSheet(getButtonStyleSheet((i + j) % 2 == 0 ? true : false, CaseType::Normal)); 
+				//We use %2 here ^ because we want odd cases to use a different style from even cases
 				allChessCasesButtons.push_back(newChessButton);
 			}
 		}
@@ -65,11 +69,11 @@ namespace ChessDisplay
 	void DisplayManager::movePieceToPosition(QWidget* piece, int gridX, int gridY)
 	{
 		QPropertyAnimation* animation = new QPropertyAnimation(piece, "geometry");
-		animation->setDuration(350);
+		animation->setDuration(MOVE_ANIMATION_DURATION);
 
 		QPoint positionReference = chessFrame->geometry().topLeft();
-		QRect destinationRect = QRect(positionReference, QSize(chessCaseSize, chessCaseSize))
-			.translated(gridX * chessCaseSize, gridY * chessCaseSize);
+		QRect destinationRect = QRect(positionReference, QSize(CHESS_CASE_SIZE, CHESS_CASE_SIZE))
+			.translated(gridX * CHESS_CASE_SIZE, gridY * CHESS_CASE_SIZE);
 
 		animation->setEndValue(destinationRect);
 		animation->setEasingCurve(QEasingCurve::OutExpo);
@@ -143,20 +147,21 @@ namespace ChessDisplay
 			caseToShow = (pieceExistInPosition(gridX, gridY)) ? CaseType::DeathCase : CaseType::PlacementIndicator;
 		}
 		getButtonAtPosition(gridX, gridY)->setStyleSheet(getButtonStyleSheet(((gridX + gridY) % 2 == 0 ? true : false), caseToShow));
+		//We use %2 here ^ because we want odd cases to use a different style from even cases
 	}
 
 	QPushButton* DisplayManager::getButtonAtPosition(int gridX, int gridY)
 	{
-		int countX = 0;
-		int countY = 0;
+		int countX = ORIGIN_POSITION;
+		int countY = ORIGIN_POSITION;
 		for (auto&& btn : allChessCasesButtons)
 		{
 			if (countX == gridX && countY == gridY)
 				return btn;
 
 			countY++;
-			countY = countY % 8;
-			if (countY == 0)
+			countY = countY % NB_OF_ROWS;
+			if (countY == ORIGIN_POSITION)
 				countX++;
 		}
 	}
@@ -166,19 +171,44 @@ namespace ChessDisplay
 		return spawnedPieces;
 	}
 
+	std::string DisplayManager::getPieceNameFromType(ChessPiecesData::PieceType type)
+	{
+		switch (type)
+		{
+		case ChessPiecesData::PieceType::None:
+			return "None";
+			break;
+		case ChessPiecesData::PieceType::King:
+			return "King";
+			break;
+		case ChessPiecesData::PieceType::Bishop:
+			return "Bishop";
+			break;
+		case ChessPiecesData::PieceType::Knight:
+			return "Knight";
+			break;
+		case ChessPiecesData::PieceType::Rook:
+			return "Rook";
+			break;
+		default:
+			return "Unkown";
+			break;
+		}
+	}
+
 	void DisplayManager::summonPiece(std::shared_ptr<AbsChessPiece> pieceData)
 	{
 		SpawnedPiece newSpawnedPiece = SpawnedPiece(pieceData, createPieceVisual(pieceData));
 		spawnedPieces.push_back(newSpawnedPiece);
 
-		qDebug() << "Summoned " << pieceData.get()->getPieceName().c_str() << "\n";
+		qDebug() << "Summoned " << getPieceNameFromType(pieceData.get()->getPieceName()).c_str() << "\n";
 	}
 
 	void DisplayManager::removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove)
 	{
 		SpawnedPiece spawnedPieceToRemove = getSpawnedPiece(pieceToRemove);
 
-		int foundIndex = -1;
+		int foundIndex = -1; //set initial value to a negative number (invalid value)
 		for (int i = 0; i < spawnedPieces.size(); i++)
 		{
 			if (spawnedPieces[i].pieceData == spawnedPieceToRemove.pieceData)
@@ -211,9 +241,9 @@ namespace ChessDisplay
 		}
 		spawnedPieces.clear();
 
-		for (int i = 0; i < nbOfRows; i++)
+		for (int i = 0; i < NB_OF_ROWS; i++)
 		{
-			for (int j = 0; j < nbOfColumns; j++)
+			for (int j = 0; j < NB_OF_COLUMNS; j++)
 			{
 				togglePlacementIndication(false, i, j);
 			}
@@ -264,22 +294,22 @@ namespace ChessDisplay
 
 	const int DisplayManager::getNumberOfRows()
 	{
-		return nbOfRows;
+		return NB_OF_ROWS;
 	}
 
 	const int DisplayManager::getNumberOfColumns()
 	{
-		return nbOfColumns;
+		return NB_OF_COLUMNS;
 	}
 
 	QPushButton* DisplayManager::createChessCase(QWidget* parent)
 	{
 		QPushButton* output = new QPushButton(parent);
 
-		output->setBaseSize(QSize(0, 0));
+		output->setBaseSize(QSize(CASE_BASE_SIZE, CASE_BASE_SIZE));
 		output->setMouseTracking(true);
 		output->setAutoFillBackground(false);
-		output->setIconSize(QSize(chessCaseSize, chessCaseSize));
+		output->setIconSize(QSize(CHESS_CASE_SIZE, CHESS_CASE_SIZE));
 		output->setFlat(true);
 
 		return output;
@@ -290,17 +320,18 @@ namespace ChessDisplay
 	{
 		QPushButton* piece = new QPushButton(chessFrame->parentWidget());
 
-		int posX = pieceData.get()->getPiecePosition().gridX * chessCaseSize + chessFrame->geometry().x();
-		int posY = pieceData.get()->getPiecePosition().gridY * chessCaseSize + chessFrame->geometry().y();
+		int posX = pieceData.get()->getPiecePosition().gridX * CHESS_CASE_SIZE + chessFrame->geometry().x();
+		int posY = pieceData.get()->getPiecePosition().gridY * CHESS_CASE_SIZE + chessFrame->geometry().y();
 
 		piece->setObjectName(QString::fromUtf8("piece"));
-		piece->setGeometry(QRect(posX, posY, chessCaseSize, chessCaseSize));
+		piece->setGeometry(QRect(posX, posY, CHESS_CASE_SIZE, CHESS_CASE_SIZE));
 		piece->setCursor(QCursor(Qt::PointingHandCursor));
 		piece->setFocusPolicy(Qt::NoFocus);
-		piece->setIconSize(QSize(chessCaseSize, chessCaseSize));
+		piece->setIconSize(QSize(CHESS_CASE_SIZE, CHESS_CASE_SIZE));
 		piece->setFlat(true);
 
-		QString pieceImage = basePieceFilePath + QString::fromStdString(pieceData.get()->getPieceName());
+		QString pieceImage = basePieceFilePath +
+			QString::fromStdString(getPieceNameFromType(pieceData.get()->getPieceName()));
 
 		pieceImage = pieceData.get()->isPlayer1Piece() ? pieceImage : pieceImage + QString("2");
 		pieceImage += QString(".png");
@@ -308,8 +339,6 @@ namespace ChessDisplay
 		piece->setStyleSheet(QString("border-image: url(" + pieceImage + ") 0 0 0 0 stretch stretch;\n"));
 
 		piece->show();
-
-		qDebug() << "Summoned " << pieceData->getPieceName().c_str() << " at " << posX << " " << posY;
 
 		return piece;
 	}

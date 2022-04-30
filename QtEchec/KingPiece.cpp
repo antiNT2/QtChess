@@ -9,11 +9,21 @@ namespace ChessPiecesData
 	{
 		std::vector<PiecePosition> output;
 
-		const int numberOfPos = 8;
-		PiecePosition positions[numberOfPos] = { PiecePosition(0,-1), PiecePosition(0, 1), PiecePosition(1, 0)
-		,PiecePosition(-1, 0), PiecePosition(1,-1), PiecePosition(1, 1), PiecePosition(-1, 1), PiecePosition(-1,-1) };
+		const int NB_OF_POS = 8; //the king can move to 8 different positions, (no relation to board size or anything)
 
-		for (int i = 0; i < numberOfPos; i++)
+
+		PiecePosition positions[NB_OF_POS] = { 
+			PiecePosition(PiecePosition::NO_TRANSLATION, PiecePosition::UP),
+			PiecePosition(PiecePosition::NO_TRANSLATION,PiecePosition::DOWN), 
+			PiecePosition(PiecePosition::RIGHT, PiecePosition::NO_TRANSLATION),
+			PiecePosition(PiecePosition::LEFT, PiecePosition::NO_TRANSLATION),
+			PiecePosition(PiecePosition::RIGHT, PiecePosition::UP),
+			PiecePosition(PiecePosition::RIGHT, PiecePosition::DOWN),
+			PiecePosition(PiecePosition::LEFT, PiecePosition::DOWN), 
+			PiecePosition(PiecePosition::LEFT, PiecePosition::UP) 
+		};
+
+		for (int i = 0; i < NB_OF_POS; i++)
 		{
 			PiecePosition inspectedPos = positions[i] + getPiecePosition();
 			checkValidPosDefault(inspectedPos, output, currentPieces);
@@ -22,8 +32,8 @@ namespace ChessPiecesData
 		return output;
 	}
 
-	const std::string KingPiece::getPieceName()
+	const PieceType KingPiece::getPieceName()
 	{
-		return "King";
+		return PieceType::King;
 	}
 }

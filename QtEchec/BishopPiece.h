@@ -8,7 +8,7 @@ namespace ChessPiecesData
 	public:
 		BishopPiece(PiecePosition initialPos, bool _isPlayer1);
 		virtual std::vector<PiecePosition> getPossibleDestinations(ChessPiecesHolder currentPieces) override;
-		virtual const std::string getPieceName() override;
+		virtual const PieceType getPieceName() override;
 	};
 }
 

@@ -1,12 +1,5 @@
 ﻿  Reading Qt configuration (C:/Qt/6.2.4/msvc2019_64/bin/qmake)
-  uic QtEchec.ui
-  rcc QtEchec.qrc
-  DisplayManager.cpp
-  QtEchec.cpp
-  main.cpp
-C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\QtEchec\DisplayManager.cpp(105,75): warning C4114: same type qualifier used more than once
-C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\QtEchec\DisplayManager.cpp(162): warning C4715: 'ChessDisplay::DisplayManager::getButtonAtPosition': not all control paths return a value
-  moc_DisplayManager.cpp
-  moc_QtEchec.cpp
-  qrc_QtEchec.cpp
+  GameStateManager.cpp
+  KnightPiece.cpp
+  TowerPiece.cpp
   QtEchec.vcxproj -> C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\x64\Debug\QtEchec.exe

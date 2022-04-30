@@ -8,6 +8,14 @@ namespace ChessPiecesData
 {
 	struct PiecePosition
 	{
+		static const int UP = -1;
+		static const int DOWN = 1;
+
+		static const int LEFT = -1;
+		static const int RIGHT = 1;
+
+		static const int NO_TRANSLATION = 0;
+
 		PiecePosition(int _gridX = 0, int _gridY = 0)
 		{
 			gridX = _gridX;
@@ -43,6 +51,18 @@ namespace ChessPiecesData
 		int gridY;
 	};
 
+	enum class PieceType
+	{
+		None,
+		King,
+		Bishop,
+		Knight,
+		Rook
+	};
+
+	const int NB_OF_ROWS = 8;
+	const int NB_OF_COLUMNS = 8;
+
 	class ChessPiecesHolder;
 
 	class AbsChessPiece
@@ -53,7 +73,7 @@ namespace ChessPiecesData
 		void setPiecePosition(PiecePosition pos);
 		const bool isPlayer1Piece();
 
-		virtual const std::string getPieceName() = 0;
+		virtual const PieceType getPieceName() = 0;
 		virtual std::vector<PiecePosition> getPossibleDestinations(ChessPiecesHolder currentPieces) = 0;
 
 	private:

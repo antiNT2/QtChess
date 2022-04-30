@@ -10,39 +10,42 @@ namespace ChessPiecesData
 	{
 		std::vector<PiecePosition> output;
 
-		const int boardLength = 8;
-
 		bool continueCheckingUp = true;
 		bool continueCheckingDown = true;
 		bool continueCheckingLeft = true;
 		bool continueCheckingRight = true;
 
-		for (int i = 1; i < boardLength; i++) //we start i at 1 because we dont want to check ourselves
+		for (int i = 1; i < NB_OF_ROWS; i++) //we start i at 1 because we dont want to check ourselves
 		{
 			//Up
 			if (continueCheckingUp)
-				continueCheckingUp = checkValidPosDefault(PiecePosition(0, -i) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
+				continueCheckingUp = checkIfContinueChecking(PiecePosition::NO_TRANSLATION, PiecePosition::UP * i, output, currentPieces);
 
 			//Down
 			if (continueCheckingDown)
-				continueCheckingDown = checkValidPosDefault(PiecePosition(0, i) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
+				continueCheckingDown = checkIfContinueChecking(PiecePosition::NO_TRANSLATION, PiecePosition::DOWN * i, output, currentPieces);
 
 			//Left
 			if (continueCheckingLeft)
-				continueCheckingLeft = checkValidPosDefault(PiecePosition(-i, 0) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
+				continueCheckingLeft = checkIfContinueChecking(PiecePosition::LEFT * i, PiecePosition::NO_TRANSLATION, output, currentPieces);
 
 			//Right
 			if (continueCheckingRight)
-				continueCheckingRight = checkValidPosDefault(PiecePosition(i, 0) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
+				continueCheckingRight = checkIfContinueChecking(PiecePosition::RIGHT * i, PiecePosition::NO_TRANSLATION, output, currentPieces);
 		}
 
 
 		return output;
 	}
 
-	const std::string TowerPiece::getPieceName()
+	bool TowerPiece::checkIfContinueChecking(int x, int y, std::vector<PiecePosition>& output, ChessPiecesHolder currentPieces)
 	{
-		return "Tower";
+		return checkValidPosDefault(PiecePosition(x, y) + getPiecePosition(), output, currentPieces) == FoundPieceAfterCheck::EmptySpace;
+	}
+
+	const PieceType TowerPiece::getPieceName()
+	{
+		return PieceType::Rook;
 	}
 
 }

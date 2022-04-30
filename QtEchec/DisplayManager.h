@@ -39,6 +39,8 @@ namespace ChessDisplay
 
 		const vector<SpawnedPiece>& getSpawnedPieces();
 
+		std::string getPieceNameFromType(ChessPiecesData::PieceType type);
+
 	public slots:
 		void summonPiece(std::shared_ptr<AbsChessPiece> pieceData);
 		void removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove);

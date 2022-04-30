@@ -11,14 +11,12 @@ namespace ChessPiecesData
 
 		PiecePosition inspectedPos = getPiecePosition();
 
-		const int boardLength = 8;
-
 		bool continueCheckingUpRight = true;
 		bool continueCheckingDownRight = true;
 		bool continueCheckingUpLeft = true;
 		bool continueCheckingDownLeft = true;
 
-		for (int i = 1; i < boardLength; i++) //we start i at 1 because we dont want to check ourselves
+		for (int i = 1; i < NB_OF_ROWS; i++) //we start i at 1 because we dont want to check ourselves
 		{
 			//Up Right
 			if (continueCheckingUpRight)
@@ -40,8 +38,8 @@ namespace ChessPiecesData
 		return output;
 	}
 
-	const std::string BishopPiece::getPieceName()
+	const PieceType BishopPiece::getPieceName()
 	{
-		return "Bishop";
+		return PieceType::Bishop;
 	}
 }
