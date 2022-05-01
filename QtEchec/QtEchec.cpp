@@ -30,16 +30,16 @@ void QtEchec::resetGame()
 
 void QtEchec::showWelcomeWindow()
 {
-	QStringList items;
-	items << tr("Default") << tr("More rooks") << tr("No knights");
+	QStringList configs;
+	configs << tr("Default") << tr("More rooks") << tr("No knights");
 
 	bool ok;
-	QString item = QInputDialog::getItem(this, tr("Start a new game"),
-		tr("Welcome to QtChess! Select a starting position."), items, 0, false, &ok);
+	QString selectedConfiguration = QInputDialog::getItem(this, tr("Start a new game"),
+		tr("Welcome to QtChess! Select a starting position."), configs, 0, false, &ok);
 
-	int indexSelected = items.indexOf(item);
+	int indexSelected = configs.indexOf(selectedConfiguration);
 
-	if (ok && !item.isEmpty())
+	if (ok && !selectedConfiguration.isEmpty())
 		selectedDefaultConfiguration = GameStateManager::InitialBoardPiecesPosition(indexSelected);
 }
 
