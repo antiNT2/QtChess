@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QScrollbar>
 #include <stdexcept>
+#include <QMessageBox>
 using namespace std;
 
 namespace ChessDisplay
@@ -23,12 +24,14 @@ namespace ChessDisplay
 	const QString basePieceFilePath = ":/QtEchec/images/";
 #pragma endregion
 
+#pragma region Const values definition
 	const int ORIGIN_POSITION = 0;
 	const int CASE_BASE_SIZE = 0;
 	const int NB_OF_ROWS = 8;
 	const int NB_OF_COLUMNS = 8;
 	const int CHESS_CASE_SIZE = 64;
 	const int MOVE_ANIMATION_DURATION = 350;
+#pragma endregion
 
 	DisplayManager::DisplayManager()
 	{
@@ -262,10 +265,17 @@ namespace ChessDisplay
 			qDebug() << "Piece doesnt exist (bg color) " << gridX << " " << gridY << " \n";
 	}
 
-	void DisplayManager::displayMessage(QString messageToShow)
+	void DisplayManager::displayMessage(const QString messageToShow)
 	{
 		ui->debugInfoDisplay->insertPlainText(messageToShow);
 		ui->debugInfoDisplay->verticalScrollBar()->setValue(ui->debugInfoDisplay->verticalScrollBar()->maximum());
+	}
+
+	void DisplayManager::displayDialogueBox(const QString messageToShow)
+	{
+		QMessageBox msgBox;
+		msgBox.setText(messageToShow);
+		msgBox.exec();
 	}
 
 	QString DisplayManager::getButtonStyleSheet(bool isRedCase, CaseType caseType)

@@ -14,7 +14,15 @@ class GameStateManager : public QObject
 public:
 	GameStateManager();
 	~GameStateManager();
-	void instantiateInitialPieces();
+
+	enum class InitialBoardPiecesPosition
+	{
+		Default,
+		MoreRooks,
+		NoKnights
+	};
+
+	void instantiateInitialPieces(InitialBoardPiecesPosition initialBoardPiecesPosition = InitialBoardPiecesPosition::Default);
 	void selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect);
 	void deselectCurrentPiece();
 	void moveCurrentPiece(ChessPiecesData::PiecePosition destination);

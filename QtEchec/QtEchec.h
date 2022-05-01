@@ -17,7 +17,9 @@ private:
 	ChessDisplay::DisplayManager displayManager;
 	GameStateManager gameStateManager;
 	std::vector<QMetaObject::Connection> allConnections;
+	GameStateManager::InitialBoardPiecesPosition selectedDefaultConfiguration = GameStateManager::InitialBoardPiecesPosition::Default;
 
 	void initializeGame(bool reset);
 	void resetGame();
+	void showWelcomeWindow();
 };

@@ -31,7 +31,9 @@ namespace ChessDisplay
 
 		void setBackgroundColor(int gridX, int gridY, bool transparent);
 
-		void displayMessage(QString messageToShow);
+		void displayMessage(const QString messageToShow);
+
+		void displayDialogueBox(const QString messageToShow);
 
 		const int getNumberOfRows();
 		const int getNumberOfColumns();

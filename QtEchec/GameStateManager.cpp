@@ -25,18 +25,41 @@ GameStateManager::~GameStateManager()
 {
 }
 
-void GameStateManager::instantiateInitialPieces()
+void GameStateManager::instantiateInitialPieces(InitialBoardPiecesPosition initialBoardPiecesPosition)
 {
 	using namespace ChessPiecesData;
 
 	instantiatePieceForBothSides<KingPiece>(PiecePosition(4, 7));
-	instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
-	instantiatePieceForBothSides<KnightPiece>(PiecePosition(1, 7));
-	instantiatePieceForBothSides<KnightPiece>(PiecePosition(6, 7));
-	instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
 
-	instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
-	instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
+	switch (initialBoardPiecesPosition)
+	{
+	case GameStateManager::InitialBoardPiecesPosition::Default:
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
+		instantiatePieceForBothSides<KnightPiece>(PiecePosition(1, 7));
+		instantiatePieceForBothSides<KnightPiece>(PiecePosition(6, 7));
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
+		instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
+		instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
+		break;
+	case GameStateManager::InitialBoardPiecesPosition::MoreRooks:
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
+
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(2, 7));
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(5, 7));
+		instantiatePieceForBothSides<KnightPiece>(PiecePosition(1, 7));
+		instantiatePieceForBothSides<KnightPiece>(PiecePosition(6, 7));
+		break;
+	case GameStateManager::InitialBoardPiecesPosition::NoKnights:
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
+		instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
+		instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
+		break;
+	default:
+		break;
+	}
+			
 
 
 	qDebug() << "Finished instantiating new pieces \n";

@@ -2,6 +2,8 @@
 #include "DisplayManager.h"
 #include "qscrollbar.h"
 #include "GameStateManager.h"
+#include <QMessageBox>
+#include <QInputDialog>
 
 QtEchec::QtEchec(QWidget* parent)
 	: QMainWindow(parent)
@@ -26,6 +28,21 @@ void QtEchec::resetGame()
 	initializeGame(true);
 }
 
+void QtEchec::showWelcomeWindow()
+{
+	QStringList items;
+	items << tr("Default") << tr("More rooks") << tr("No knights");
+
+	bool ok;
+	QString item = QInputDialog::getItem(this, tr("Start a new game"),
+		tr("Welcome to QtChess! Select a starting position."), items, 0, false, &ok);
+
+	int indexSelected = items.indexOf(item);
+
+	if (ok && !item.isEmpty())
+		selectedDefaultConfiguration = GameStateManager::InitialBoardPiecesPosition(indexSelected);
+}
+
 void QtEchec::initializeGame(bool reset = false)
 {
 	using namespace std;
@@ -40,11 +57,11 @@ void QtEchec::initializeGame(bool reset = false)
 		displayManager.setUpChessUi();
 	}
 
+	showWelcomeWindow();
 
 	ui.debugInfoDisplay->clear();
 	// Greet the players with a cuphead reference
-	displayManager.displayMessage(QString("A great slam and then some! \n"));
-	displayManager.displayMessage(QString("And begin! \n"));
+	displayManager.displayMessage("This match will get red hot! \n");
 
 
 	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onInstantiatePiece,
@@ -90,12 +107,12 @@ void QtEchec::initializeGame(bool reset = false)
 
 	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onVerifyCheckmate,
 		[&](bool isPlayer1Checkmate) {displayManager.
-		displayMessage(isPlayer1Checkmate ? "PLAYER 2 WINS \n" : "PLAYER 1 WINS \n"); }));
+		displayDialogueBox(isPlayer1Checkmate ? "PLAYER 2 WINS \n" : "PLAYER 1 WINS \n"); resetGame(); }));
 
 	connect(&gameStateManager, &GameStateManager::onResetBoard, &displayManager, &DisplayManager::deleteAllPieces);
 	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onTooManyKings, [&]() {displayManager.displayMessage("TOO MANY KINGS! \n"); }));
 
-	gameStateManager.instantiateInitialPieces();
+	gameStateManager.instantiateInitialPieces(selectedDefaultConfiguration);
 
 	for (auto&& spawnedPiece : displayManager.getSpawnedPieces())
 	{
@@ -105,5 +122,6 @@ void QtEchec::initializeGame(bool reset = false)
 
 	allConnections.push_back(connect(&gameStateManager, &GameStateManager::onPieceMoved,
 		[&](const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY)
-		{ displayManager.movePieceToPosition(piece, gridX, gridY); }));	
+		{ displayManager.movePieceToPosition(piece, gridX, gridY); }));
 }
+
