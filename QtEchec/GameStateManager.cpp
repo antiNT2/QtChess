@@ -41,6 +41,11 @@ void GameStateManager::instantiateInitialPieces(InitialBoardPiecesPosition initi
 		instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
 		instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
 		instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
+
+		/*instantiatePiece<TowerPiece>(PiecePosition(4, 6), true);
+		instantiatePiece<TowerPiece>(PiecePosition(4, 1), false);
+		instantiatePiece<TowerPiece>(PiecePosition(5, 1), false);*/
+
 		break;
 	case GameStateManager::InitialBoardPiecesPosition::MoreRooks:
 		instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
@@ -54,13 +59,16 @@ void GameStateManager::instantiateInitialPieces(InitialBoardPiecesPosition initi
 	case GameStateManager::InitialBoardPiecesPosition::NoKnights:
 		instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
 		instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
-		instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
-		instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
+		instantiatePieceForBothSides<BishopPiece>(PiecePosition(7, 7));
+		instantiatePieceForBothSides<BishopPiece>(PiecePosition(6, 7));
+
+		/*instantiatePiece<TowerPiece>(PiecePosition(5, 7), false);
+		instantiatePiece<TowerPiece>(PiecePosition(5, 5), false);*/
 		break;
 	default:
 		break;
 	}
-			
+
 
 
 	qDebug() << "Finished instantiating new pieces \n";
@@ -307,6 +315,7 @@ bool GameStateManager::isKingInCheckWithBoardConfiguration(bool player1King, Che
 
 	return false;
 }
+
 
 void GameStateManager::verifyCheckAndCheckmate()
 {

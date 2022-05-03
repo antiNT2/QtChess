@@ -48,9 +48,6 @@ namespace ChessPiecesData
 
 	const std::shared_ptr<AbsChessPiece> ChessPiecesHolder::getPieceAtPosition(const PiecePosition pos) const
 	{
-		if (pos.gridX > 8 || pos.gridY < 0) // check if out of bounds
-			return nullptr;
-
 		for (auto&& piece : allChessPieces)
 		{
 			if (piece.get()->getPiecePosition() == pos)

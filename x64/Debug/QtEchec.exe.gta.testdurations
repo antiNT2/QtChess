@@ -10,9 +10,17 @@
     <TestDuration Test="Chess.TestValidPosition" Duration="1" />
     <TestDuration Test="Chess.TestInstantiatePiece" Duration="1" />
     <TestDuration Test="Chess.TestResetBoard" Duration="1" />
-    <TestDuration Test="Chess.TestSelectPiece" Duration="1" />
+    <TestDuration Test="Chess.TestSelectPiece" Duration="2" />
     <TestDuration Test="Chess.TestMoveCurrentPiece" Duration="1" />
     <TestDuration Test="Chess.TestKingCheck" Duration="1" />
     <TestDuration Test="Chess.TestInstantiatePieceForBothSides" Duration="1" />
+    <TestDuration Test="Chess.TestCheckmate" Duration="3" />
+    <TestDuration Test="Chess.TestVerifyCheckAndCHeckmate" Duration="7" />
+    <TestDuration Test="Chess.TestVerifyCheckAndCheckmate" Duration="7" />
+    <TestDuration Test="Chess.TestSetCurrentAllowedDestinations" Duration="10" />
+    <TestDuration Test="Chess.TestIsPositionIncludedInCurrentAllowedPos" Duration="1" />
+    <TestDuration Test="Chess.TestCheckKingPieceCounter" Duration="1" />
+    <TestDuration Test="Chess.TestDestroyPiece" Duration="1" />
+    <TestDuration Test="Chess.TestEqualsOperator" Duration="1" />
   </TestDurations>
 </GtaTestDurations>
