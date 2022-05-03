@@ -1,3 +1,12 @@
 ﻿  Reading Qt configuration (C:/Qt/6.2.4/msvc2019_64/bin/qmake)
+  moc GameStateManager.h
+  GameStateManager.cpp
   QtEchec.cpp
+  UnitTestingChess.cpp
+  main.cpp
+C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\QtEchec\main.cpp(1,1): warning C4828: The file contains a character starting at offset 0x1b6 that is illegal in the current source character set (codepage 65001).
+C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\QtEchec\main.cpp(1,1): warning C4828: The file contains a character starting at offset 0x372 that is illegal in the current source character set (codepage 65001).
+C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\QtEchec\main.cpp(1,1): warning C4828: The file contains a character starting at offset 0x430 that is illegal in the current source character set (codepage 65001).
+  moc_GameStateManager.cpp
+  moc_QtEchec.cpp
   QtEchec.vcxproj -> C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\x64\Debug\QtEchec.exe

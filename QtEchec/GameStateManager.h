@@ -1,5 +1,6 @@
 #pragma once
 #include "AbsChessPiece.h"
+#include "UnitTestingChess.h"
 
 #include <QObject>
 using std::vector;
@@ -23,32 +24,34 @@ public:
 	};
 
 	void instantiateInitialPieces(InitialBoardPiecesPosition initialBoardPiecesPosition = InitialBoardPiecesPosition::Default);
-	void selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect);
-	void deselectCurrentPiece();
-	void moveCurrentPiece(ChessPiecesData::PiecePosition destination);
-	void resetBoard();
+	void selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect); //Tested
+	void deselectCurrentPiece(); //Tested
+	void moveCurrentPiece(ChessPiecesData::PiecePosition destination); //Tested
+	void resetBoard(); //Tested
 	void operator=(const GameStateManager& other);
 
 	ChessPiecesData::ChessPiecesHolder piecesList;
+	friend class UnitTestingChess;
 
 private:
-	
 	bool isPlayer1Turn = true;
 	void setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition> allowedDestinations);
-	bool isValidPiecePosition(ChessPiecesData::PiecePosition pos);
+	bool isValidPiecePosition(ChessPiecesData::PiecePosition pos); //Tested
 	bool isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos);
 	bool movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, ChessPiecesData::PiecePosition destination);
 	void destroyPiece(const std::shared_ptr<AbsChessPiece> pieceToDestroy);
-	template<typename T> void instantiatePieceForBothSides(ChessPiecesData::PiecePosition position);
-	template<typename T> void instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1);
+	template<typename T> void instantiatePieceForBothSides(ChessPiecesData::PiecePosition position); //Tested
+	template<typename T> void instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1); //Tested
 	bool isPlayerInCheckmate(bool player1);
-	bool isKingInCheckWithBoardConfiguration(bool player1King, ChessPiecesData::ChessPiecesHolder configuration);
+	bool isKingInCheckWithBoardConfiguration(bool player1King, ChessPiecesData::ChessPiecesHolder configuration); //Tested
 	void verifyCheckAndCheckmate();
 	void checkKingPieceCounter(shared_ptr<AbsChessPiece> pieceToCheck, bool remove);
 
 	shared_ptr<AbsChessPiece> currentSelectedPiece;
 	std::vector<ChessPiecesData::PiecePosition> currentAllowedDestinations;
 	static int kingPieceCounter;
+
+
 
 signals:
 	void onNoPieceSelected();

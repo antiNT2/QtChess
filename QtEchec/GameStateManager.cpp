@@ -23,6 +23,7 @@ GameStateManager::GameStateManager()
 
 GameStateManager::~GameStateManager()
 {
+	resetBoard();
 }
 
 void GameStateManager::instantiateInitialPieces(InitialBoardPiecesPosition initialBoardPiecesPosition)
@@ -208,6 +209,9 @@ bool GameStateManager::isValidPiecePosition(ChessPiecesData::PiecePosition pos)
 
 bool GameStateManager::isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos)
 {
+	if (currentAllowedDestinations.size() == 0)
+		return false;
+
 	for (auto p : currentAllowedDestinations)
 	{
 		if (pos == p)
@@ -219,9 +223,7 @@ bool GameStateManager::isPositionIncludedInCurrentAllowedPos(ChessPiecesData::Pi
 
 bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, ChessPiecesData::PiecePosition destination)
 {
-	if (pieceToMove == nullptr)
-		return false;
-	if (isValidPiecePosition(destination) == false)
+	if (isValidPiecePosition(destination) == false || pieceToMove == nullptr)
 		return false;
 
 	pieceToMove.get()->setPiecePosition(destination);

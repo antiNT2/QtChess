@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GtaTestDurations xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Executable>C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\x64\Debug\QtEchec.exe</Executable>
+  <TestDurations>
+    <TestDuration Test="Calc.simple" Duration="1" />
+    <TestDuration Test="Chess.simple1" Duration="1" />
+    <TestDuration Test="Chess.instantiatePiece" Duration="1" />
+    <TestDuration Test="Chess.InstantiateInitialPieces" Duration="1" />
+    <TestDuration Test="Chess.MonTest" Duration="1" />
+    <TestDuration Test="Chess.TestValidPosition" Duration="1" />
+    <TestDuration Test="Chess.TestInstantiatePiece" Duration="1" />
+    <TestDuration Test="Chess.TestResetBoard" Duration="1" />
+    <TestDuration Test="Chess.TestSelectPiece" Duration="1" />
+    <TestDuration Test="Chess.TestMoveCurrentPiece" Duration="1" />
+    <TestDuration Test="Chess.TestKingCheck" Duration="1" />
+    <TestDuration Test="Chess.TestInstantiatePieceForBothSides" Duration="1" />
+  </TestDurations>
+</GtaTestDurations>
