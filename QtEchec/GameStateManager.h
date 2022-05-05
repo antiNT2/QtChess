@@ -1,3 +1,10 @@
+/**
+* Chess model that handles all the chess game logic
+* \file   GameStateManager.h | GameStateManager.cpp
+* \author BEN RHOUMA Ahmed and KEZOUH Ryan
+* \date   April 6th 2022
+*/
+
 #pragma once
 #include "AbsChessPiece.h"
 #include "UnitTestingChess.h"
@@ -23,29 +30,29 @@ public:
 		NoKnights
 	};
 
-	void instantiateInitialPieces(InitialBoardPiecesPosition initialBoardPiecesPosition = InitialBoardPiecesPosition::Default); //Tested
-	void selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect); //Tested
-	void deselectCurrentPiece(); //Tested
-	void moveCurrentPiece(ChessPiecesData::PiecePosition destination); //Tested
-	void resetBoard(); //Tested
-	void operator=(const GameStateManager& other);
+	void instantiateInitialPieces(const InitialBoardPiecesPosition initialBoardPiecesPosition = InitialBoardPiecesPosition::Default); 
+	void selectPiece(const shared_ptr<AbsChessPiece> pieceToSelect); 
+	void deselectCurrentPiece(); 
+	void moveCurrentPiece(const ChessPiecesData::PiecePosition destination); 
+	void resetBoard(); 
+	void operator=(const GameStateManager& other); 
 
 	ChessPiecesData::ChessPiecesHolder piecesList;
 	friend class UnitTestingChess;
 
 private:
 	bool isPlayer1Turn = true;
-	void setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition> allowedDestinations); //Tested
-	bool isValidPiecePosition(ChessPiecesData::PiecePosition pos); //Tested
-	bool isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos);  //Tested
-	bool movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, ChessPiecesData::PiecePosition destination); //Tested
-	void destroyPiece(const std::shared_ptr<AbsChessPiece> pieceToDestroy); //Tested
-	template<typename T> void instantiatePieceForBothSides(ChessPiecesData::PiecePosition position); //Tested
-	template<typename T> void instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1); //Tested
-	bool isPlayerInCheckmate(bool player1); //Tested
-	bool isKingInCheckWithBoardConfiguration(bool player1King, ChessPiecesData::ChessPiecesHolder configuration); //Tested
-	void verifyCheckAndCheckmate(); //Tested
-	void checkKingPieceCounter(shared_ptr<AbsChessPiece> pieceToCheck, bool remove); //Tested
+	void setCurrentAllowedDestinations(const std::vector<ChessPiecesData::PiecePosition> allowedDestinations); 
+	bool isValidPiecePosition(const ChessPiecesData::PiecePosition position); 
+	bool isPositionIncludedInCurrentAllowedPos(const ChessPiecesData::PiecePosition position);  
+	bool movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, const ChessPiecesData::PiecePosition destination); 
+	void destroyPiece(const std::shared_ptr<AbsChessPiece> pieceToDestroy); 
+	template<typename T> void instantiatePieceForBothSides(const ChessPiecesData::PiecePosition position); 
+	template<typename T> void instantiatePiece(const ChessPiecesData::PiecePosition position, bool isPlayer1); 
+	bool isPlayerInCheckmate(bool player1); 
+	bool isKingInCheckWithBoardConfiguration(bool player1King, ChessPiecesData::ChessPiecesHolder configuration); 
+	void verifyCheckAndCheckmate(); 
+	void checkKingPieceCounter(const shared_ptr<AbsChessPiece> pieceToCheck, bool remove); 
 
 	shared_ptr<AbsChessPiece> currentSelectedPiece;
 	std::vector<ChessPiecesData::PiecePosition> currentAllowedDestinations;

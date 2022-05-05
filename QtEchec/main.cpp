@@ -1,3 +1,10 @@
+/**
+* Program that allows 2 players to play chess on the same computer
+* \file   UnitTestingChess.h | UnitTestingChess.cpp
+* \author BEN RHOUMA Ahmed and KEZOUH Ryan
+* \date   April 6th 2022
+*/
+
 #include "QtEchec.h"
 #include <QtWidgets/QApplication>
 
@@ -11,16 +18,16 @@ auto& cdbg = clog;
 
 #if __has_include("verification_allocation.hpp")
 #include "verification_allocation.hpp"
-#include "debogage_memoire.hpp"  //NOTE: Incompatible avec le "placement new", ne pas utiliser cette entête si vous utilisez ce type de "new" dans les lignes qui suivent cette inclusion.
+#include "debogage_memoire.hpp" 
 #endif
 
 void initialiserBibliothequeCours([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
 #ifdef BIBLIOTHEQUE_COURS_INCLUS
-	bibliotheque_cours::activerCouleursAnsi();  // Permet sous Windows les "ANSI escape code" pour changer de couleurs https://en.wikipedia.org/wiki/ANSI_escape_code ; les consoles Linux/Mac les supportent normalement par défaut.
+	bibliotheque_cours::activerCouleursAnsi();
 
 
-	bibliotheque_cours::executerGoogleTest(argc, argv); // Attention de ne rien afficher avant cette ligne, sinon l'Explorateur de tests va tenter de lire votre affichage comme un résultat de test.
+    bibliotheque_cours::executerGoogleTest(argc, argv);
 #endif
 }
 

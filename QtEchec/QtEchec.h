@@ -1,3 +1,10 @@
+/**
+* Controller that links the model and the view together
+* \file   QtEchec.h | QtEchec.cpp
+* \author BEN RHOUMA Ahmed and KEZOUH Ryan
+* \date   April 6th 2022
+*/
+
 #pragma once
 
 #include <QtWidgets/QMainWindow>

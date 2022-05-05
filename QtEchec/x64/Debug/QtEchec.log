@@ -1,4 +1,25 @@
 ﻿  Reading Qt configuration (C:/Qt/6.2.4/msvc2019_64/bin/qmake)
-  GameStateManager.cpp
+  uic QtEchec.ui
+  rcc QtEchec.qrc
+  moc QtEchec.h
+  moc DisplayManager.h
+  moc GameStateManager.h
+  bibliotheque_cours.cpp
+  verification_allocation.cpp
+C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\include\CodeCoverage_bugfix.h : warning : Il vous manque le fichier CodeCoverage.h de Visual Studio Enterprise ou Preview, avez vous la version Community?
+  gtest-all.cc
+  BishopPiece.cpp
+  KnightPiece.cpp
+  TowerPiece.cpp
   UnitTestingChess.cpp
+  AbsChessPiece.cpp
+  DisplayManager.cpp
+  GameStateManager.cpp
+  KingPiece.cpp
+  QtEchec.cpp
+  main.cpp
+  qrc_QtEchec.cpp
+  moc_QtEchec.cpp
+  moc_DisplayManager.cpp
+  moc_GameStateManager.cpp
   QtEchec.vcxproj -> C:\Users\ahmed\Documents\Cours Poly\2021-2022\Second Semestre\INF1015\PROJET\QtEchec\x64\Debug\QtEchec.exe

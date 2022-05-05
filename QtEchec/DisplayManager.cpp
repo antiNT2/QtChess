@@ -33,7 +33,7 @@ namespace ChessDisplay
 	const int MOVE_ANIMATION_DURATION = 350;
 #pragma endregion
 
-	DisplayManager::DisplayManager()
+	DisplayManager::DisplayManager() : chessFrame{}, ui{}
 	{
 	}
 
@@ -47,9 +47,9 @@ namespace ChessDisplay
 
 	void DisplayManager::setUpChessUi()
 	{
-		for (size_t i = 0; i < NB_OF_ROWS; i++)
+		for (int i = 0; i < NB_OF_ROWS; i++)
 		{
-			for (size_t j = 0; j < NB_OF_COLUMNS; j++)
+			for (int j = 0; j < NB_OF_COLUMNS; j++)
 			{
 				QPushButton* newChessButton = createChessCase(chessFrame);
 				newChessButton->setObjectName(QString("c%1%2").arg(i, j));
@@ -109,7 +109,7 @@ namespace ChessDisplay
 		piece->setStyleSheet(QString::fromStdString(newStyleSheet));
 	}
 
-	const DisplayManager::SpawnedPiece DisplayManager::getSpawnedPiece(const const std::shared_ptr<AbsChessPiece> piece)
+	const DisplayManager::SpawnedPiece DisplayManager::getSpawnedPiece(const std::shared_ptr<AbsChessPiece> piece)
 	{
 		for (auto&& sp : spawnedPieces)
 		{
@@ -167,6 +167,8 @@ namespace ChessDisplay
 			if (countY == ORIGIN_POSITION)
 				countX++;
 		}
+
+		return nullptr;
 	}
 
 	const vector<DisplayManager::SpawnedPiece>& DisplayManager::getSpawnedPieces()
@@ -199,7 +201,7 @@ namespace ChessDisplay
 		}
 	}
 
-	void DisplayManager::summonPiece(std::shared_ptr<AbsChessPiece> pieceData)
+	void DisplayManager::summonPiece(const std::shared_ptr<AbsChessPiece> pieceData)
 	{
 		SpawnedPiece newSpawnedPiece = SpawnedPiece(pieceData, createPieceVisual(pieceData));
 		spawnedPieces.push_back(newSpawnedPiece);
@@ -207,7 +209,7 @@ namespace ChessDisplay
 		qDebug() << "Summoned " << getPieceNameFromType(pieceData.get()->getPieceName()).c_str() << "\n";
 	}
 
-	void DisplayManager::removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove)
+	void DisplayManager::removePiece(const std::shared_ptr<AbsChessPiece> pieceToRemove)
 	{
 		SpawnedPiece spawnedPieceToRemove = getSpawnedPiece(pieceToRemove);
 

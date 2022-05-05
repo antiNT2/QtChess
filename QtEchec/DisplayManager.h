@@ -1,3 +1,10 @@
+/**
+* View script that interacts with Qt to display the actual game on screen
+* \file   DisplayManager.h | DisplayManager.cpp
+* \author BEN RHOUMA Ahmed and KEZOUH Ryan
+* \date   April 6th 2022
+*/
+
 #pragma once
 #include <QtWidgets/QMainWindow>
 #include <QPushButton>
@@ -18,8 +25,10 @@ namespace ChessDisplay
 
 		Q_OBJECT
 
+	private:
+		struct SpawnedPiece; //forward declaration
+
 	public:
-		struct SpawnedPiece;
 		DisplayManager();
 		DisplayManager(QFrame* chessFrameParent, Ui::QtEchecClass* _ui);
 		~DisplayManager();
@@ -44,8 +53,8 @@ namespace ChessDisplay
 		std::string getPieceNameFromType(ChessPiecesData::PieceType type);
 
 	public slots:
-		void summonPiece(std::shared_ptr<AbsChessPiece> pieceData);
-		void removePiece(std::shared_ptr<AbsChessPiece> pieceToRemove);
+		void summonPiece(const std::shared_ptr<AbsChessPiece> pieceData);
+		void removePiece(const std::shared_ptr<AbsChessPiece> pieceToRemove);
 		void movePieceToPosition(const std::shared_ptr<AbsChessPiece> piece, int gridX, int gridY);
 		void setPlayerTurnIndicator(bool isPlayer1Turn);
 		void deleteAllPieces();
@@ -74,7 +83,6 @@ namespace ChessDisplay
 		QString getButtonStyleSheet(bool isRedCase, CaseType caseType);
 		void movePieceToPosition(QWidget* piece, int gridX, int gridY);
 		void setBackgroundColor(QWidget* piece, bool transparent);
-		QFrame* chessFrame;
 		const SpawnedPiece getSpawnedPiece(const std::shared_ptr<AbsChessPiece> piece);
 		const SpawnedPiece& getSpawnedPiece(int gridX, int gridY);
 		const bool pieceExistInPosition(int gridX, int gridY);
@@ -83,7 +91,8 @@ namespace ChessDisplay
 		vector<SpawnedPiece> spawnedPieces;
 
 
-		Ui::QtEchecClass* ui;
+		Ui::QtEchecClass* ui = nullptr;
+		QFrame* chessFrame = nullptr;
 	};
 }
 

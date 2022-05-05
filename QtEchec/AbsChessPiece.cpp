@@ -11,9 +11,9 @@ namespace ChessPiecesData
 		return position;
 	}
 
-	void AbsChessPiece::setPiecePosition(PiecePosition pos)
+	void AbsChessPiece::setPiecePosition(const PiecePosition _position)
 	{
-		position = pos;
+		position = _position;
 	}
 
 	const bool AbsChessPiece::isPlayer1Piece()

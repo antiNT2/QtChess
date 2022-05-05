@@ -26,7 +26,7 @@ GameStateManager::~GameStateManager()
 	resetBoard();
 }
 
-void GameStateManager::instantiateInitialPieces(InitialBoardPiecesPosition initialBoardPiecesPosition)
+void GameStateManager::instantiateInitialPieces(const InitialBoardPiecesPosition initialBoardPiecesPosition)
 {
 	using namespace ChessPiecesData;
 
@@ -42,10 +42,6 @@ void GameStateManager::instantiateInitialPieces(InitialBoardPiecesPosition initi
 		instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
 		instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
 
-		/*instantiatePiece<TowerPiece>(PiecePosition(4, 6), true);
-		instantiatePiece<TowerPiece>(PiecePosition(4, 1), false);
-		instantiatePiece<TowerPiece>(PiecePosition(5, 1), false);*/
-
 		break;
 	case GameStateManager::InitialBoardPiecesPosition::MoreRooks:
 		instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
@@ -59,11 +55,11 @@ void GameStateManager::instantiateInitialPieces(InitialBoardPiecesPosition initi
 	case GameStateManager::InitialBoardPiecesPosition::NoKnights:
 		instantiatePieceForBothSides<TowerPiece>(PiecePosition(0, 7));
 		instantiatePieceForBothSides<TowerPiece>(PiecePosition(7, 7));
-		instantiatePieceForBothSides<BishopPiece>(PiecePosition(7, 7));
-		instantiatePieceForBothSides<BishopPiece>(PiecePosition(6, 7));
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(6, 6));
+		instantiatePieceForBothSides<TowerPiece>(PiecePosition(1, 6));
+		instantiatePieceForBothSides<BishopPiece>(PiecePosition(2, 7));
+		instantiatePieceForBothSides<BishopPiece>(PiecePosition(5, 7));
 
-		/*instantiatePiece<TowerPiece>(PiecePosition(5, 7), false);
-		instantiatePiece<TowerPiece>(PiecePosition(5, 5), false);*/
 		break;
 	default:
 		break;
@@ -135,7 +131,7 @@ void GameStateManager::deselectCurrentPiece()
 	setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition>());
 }
 
-void GameStateManager::moveCurrentPiece(ChessPiecesData::PiecePosition destination)
+void GameStateManager::moveCurrentPiece(const ChessPiecesData::PiecePosition destination)
 {
 	if (currentSelectedPiece == nullptr)
 	{
@@ -171,7 +167,7 @@ void GameStateManager::operator=(const GameStateManager& other)
 	piecesList = other.piecesList;
 }
 
-void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData::PiecePosition> allowedDestinations)
+void GameStateManager::setCurrentAllowedDestinations(const std::vector<ChessPiecesData::PiecePosition> allowedDestinations)
 {
 	//First we hide the current placement indicators
 	for (auto dest : currentAllowedDestinations)
@@ -210,26 +206,27 @@ void GameStateManager::setCurrentAllowedDestinations(std::vector<ChessPiecesData
 	}
 }
 
-bool GameStateManager::isValidPiecePosition(ChessPiecesData::PiecePosition pos)
+bool GameStateManager::isValidPiecePosition(const ChessPiecesData::PiecePosition position)
 {
-	return (pos.gridX <= MAX_GRID_X && pos.gridY <= MAX_GRID_Y) && (pos.gridX >= MIN_GRID_X && pos.gridY >= MIN_GRID_Y);
+	return (position.gridX <= MAX_GRID_X && position.gridY <= MAX_GRID_Y) 
+		&& (position.gridX >= MIN_GRID_X && position.gridY >= MIN_GRID_Y);
 }
 
-bool GameStateManager::isPositionIncludedInCurrentAllowedPos(ChessPiecesData::PiecePosition pos)
+bool GameStateManager::isPositionIncludedInCurrentAllowedPos(const ChessPiecesData::PiecePosition positiion)
 {
 	if (currentAllowedDestinations.size() == 0)
 		return false;
 
 	for (auto p : currentAllowedDestinations)
 	{
-		if (pos == p)
+		if (positiion == p)
 			return true;
 	}
 
 	return false;
 }
 
-bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, ChessPiecesData::PiecePosition destination)
+bool GameStateManager::movePiece(const std::shared_ptr<AbsChessPiece> pieceToMove, const ChessPiecesData::PiecePosition destination)
 {
 	if (isValidPiecePosition(destination) == false || pieceToMove == nullptr)
 		return false;
@@ -336,7 +333,7 @@ void GameStateManager::verifyCheckAndCheckmate()
 		emit onVerifyKingInCheck(isPlayer1Turn);
 }
 
-void GameStateManager::checkKingPieceCounter(shared_ptr<AbsChessPiece> pieceToCheck, bool remove)
+void GameStateManager::checkKingPieceCounter(const shared_ptr<AbsChessPiece> pieceToCheck, bool remove)
 {
 	if (pieceToCheck.get()->getPieceName() == ChessPiecesData::PieceType::King)
 	{
@@ -354,7 +351,7 @@ void GameStateManager::checkKingPieceCounter(shared_ptr<AbsChessPiece> pieceToCh
 
 
 template<typename T>
-void GameStateManager::instantiatePieceForBothSides(ChessPiecesData::PiecePosition player1Position)
+void GameStateManager::instantiatePieceForBothSides(const ChessPiecesData::PiecePosition player1Position)
 {
 	using namespace ChessPiecesData;
 	PiecePosition player2Position = PiecePosition(player1Position.gridX, MAX_GRID_Y - player1Position.gridY);
@@ -364,7 +361,7 @@ void GameStateManager::instantiatePieceForBothSides(ChessPiecesData::PiecePositi
 }
 
 template<typename T>
-void GameStateManager::instantiatePiece(ChessPiecesData::PiecePosition position, bool isPlayer1)
+void GameStateManager::instantiatePiece(const ChessPiecesData::PiecePosition position, bool isPlayer1)
 {
 	static_assert(std::is_base_of<AbsChessPiece, T>::value);
 

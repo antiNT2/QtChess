@@ -1,4 +1,6 @@
+
 #include "BishopPiece.h"
+
 namespace ChessPiecesData
 {
 	BishopPiece::BishopPiece(PiecePosition initialPos, bool _isPlayer1) : AbsChessPiece(initialPos, _isPlayer1)

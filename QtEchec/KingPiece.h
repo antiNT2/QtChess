@@ -1,3 +1,10 @@
+/**
+* King piece behaviour
+* \file   KingPiece.h | KingPiece.cpp
+* \author BEN RHOUMA Ahmed and KEZOUH Ryan
+* \date   April 6th 2022
+*/
+
 #pragma once
 #include "AbsChessPiece.h"
 

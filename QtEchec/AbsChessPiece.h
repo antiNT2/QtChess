@@ -1,3 +1,10 @@
+/**
+* Handles everything related to the individual chess pieces themselves
+* \file   AbsChessPiece.h | AbsChessPiece.cpp
+* \author BEN RHOUMA Ahmed and KEZOUH Ryan
+* \date   April 6th 2022
+*/
+
 #pragma once
 
 #include <vector>
@@ -70,7 +77,7 @@ namespace ChessPiecesData
 	public:
 		AbsChessPiece(PiecePosition initialPos, bool isPlayer1);
 		const PiecePosition getPiecePosition();
-		void setPiecePosition(PiecePosition pos);
+		void setPiecePosition(const PiecePosition _position);
 		const bool isPlayer1Piece();
 
 		virtual const PieceType getPieceName() = 0;

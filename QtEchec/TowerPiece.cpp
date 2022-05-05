@@ -1,5 +1,6 @@
+
 #include "TowerPiece.h"
-#include <QDebug>
+
 namespace ChessPiecesData
 {
 	ChessPiecesData::TowerPiece::TowerPiece(PiecePosition initialPos, bool _isPlayer1) : AbsChessPiece(initialPos, _isPlayer1)
